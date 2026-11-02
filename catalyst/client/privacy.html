@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy — premortem</title>
+  <meta name="description" content="What premortem collects, why, and what it never does.">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=47">
+  <style>
+    .legal { max-width: 760px; margin: 0 auto 40px; }
+    .legal h1 { font-size: 40px; letter-spacing: -.03em; margin: 14px 0 6px; }
+    .legal .when { color: var(--faint); font: 500 13px var(--mono); margin: 0 0 26px; }
+    .legal h2 { font-size: 20px; margin: 30px 0 8px; }
+    .legal p, .legal li { color: var(--muted); font-size: 16px; }
+    .legal ul { padding-left: 20px; } .legal li { margin-bottom: 6px; }
+    .legal a { color: var(--red); }
+    .legal .short { padding: 18px 20px; border-radius: 16px; background: rgba(255,255,255,.7); border: 1px solid var(--line); color: var(--ink); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav">
+      <a href="landing.html" class="wordmark" aria-label="premortem"><img src="assets/logo-header.png" alt="premortem" width="194" height="30"></a>
+      <div class="nav-links"><a href="landing.html">About</a><a href="index.html" class="nav-cta">Try premortem</a></div>
+    </nav>
+    <article class="card legal">
+      <span class="pill">Privacy</span>
+      <h1>Privacy policy</h1>
+      <p class="when">Last updated: 2 November 2026</p>
+      <p class="short">In short: we only keep what we need to run premortem. No ads, no tracking cookies, no selling data — ever.</p>
+
+      <h2>Who runs premortem</h2>
+      <p>premortem is an independent, free project by Navneet S. Questions or requests: <a href="https://github.com/navneetges-wq/premortem/issues">open an issue on our GitHub page</a>.</p>
+
+      <h2>What we collect, and why</h2>
+      <ul>
+        <li><b>The idea you type.</b> We send this one line to Google Gemini (to sort it into a business type) and use it in web searches through Tavily. We save it with your search so the same results can be shown again. <b>Please don’t type anything confidential.</b></li>
+        <li><b>Your email</b> — only if you sign up for updates and tick the consent box. We use it only to send occasional premortem news. Every email lets you unsubscribe.</li>
+        <li><b>Mistake reports</b> — the text you send with “Report a mistake”, so we can fix the data.</li>
+        <li><b>A scrambled visitor code</b> — made from your internet address, scrambled so it can’t be turned back. It’s used only to limit how many new searches one person can start per day, and it’s forgotten after 24 hours.</li>
+      </ul>
+
+      <h2>What stays on your device</h2>
+      <p>Your answers to the red-flag checklist and a copy of the sample report on the landing page are saved in your own browser, so they’re there next time. They never leave your device. We don’t use tracking cookies.</p>
+
+      <h2>Who helps us run premortem</h2>
+      <ul>
+        <li><b>Zoho Catalyst</b> (India) — hosts the website and stores the data.</li>
+        <li><b>Google Gemini</b> — reads news articles and sorts your one-line idea.</li>
+        <li><b>Tavily</b> — searches the web for news articles.</li>
+        <li><b>Google Fonts, jsDelivr and unpkg</b> — deliver fonts and code libraries to your browser.</li>
+      </ul>
+      <p>Each follows its own privacy policy. We never sell or share your data with anyone else.</p>
+
+      <h2>The companies shown</h2>
+      <p>premortem shows information about businesses that was published in public news, always with a link to the source. If something about a company is wrong, use “Report a mistake” or <a href="https://github.com/navneetges-wq/premortem/issues">open an issue on our GitHub page</a> and we’ll review it.</p>
+
+      <h2>Your choices</h2>
+      <ul>
+        <li>Unsubscribe from emails at any time using the link in any email.</li>
+        <li>Ask us to delete your email or a search you made: <a href="https://github.com/navneetges-wq/premortem/issues">open an issue on our GitHub page</a>.</li>
+        <li>Clear your browser’s site data to remove what’s saved on your device.</li>
+      </ul>
+
+      <h2>Changes</h2>
+      <p>If we change this policy, we’ll update the date at the top of this page.</p>
+    </article>
+    <footer class="footer card"><div class="footer-bottom" style="border:0;margin:0;padding:0">
+      <span><a href="privacy.html" style="color:inherit">Privacy</a> · <a href="terms.html" style="color:inherit">Terms</a> · <a href="https://github.com/navneetges-wq/premortem" style="color:inherit">GitHub</a></span>
+      <a href="landing.html" class="back-top">premortem →</a></div></footer>
+  </div>
+</body>
+</html>

@@ -335,7 +335,10 @@ function start() {
   ysFace.position.set(0, 1.3, ysFront); endGroup.add(ysFace);
   // glowing cracks that spread across the stone before it breaks
   const crackTex = canvasTex((x, S) => {
-    x.strokeStyle = "#ffd29a"; x.shadowColor = "#ff7a3c"; x.shadowBlur = 18; x.lineCap = "round";
+    // only inside the stone: the plane is 2.3 wide, centred at y 1.2; the arch is 1.94 wide, 1.4 + 0.97 tall
+    const X = (v) => ((v + 1.15) / 2.3) * S, Y = (v) => ((2.35 - v) / 2.3) * S;
+    x.beginPath(); x.moveTo(X(-0.95), Y(0.06)); x.lineTo(X(-0.95), Y(1.4)); x.arc(X(0), Y(1.4), (0.95 / 2.3) * S, Math.PI, 0); x.lineTo(X(0.95), Y(0.06)); x.closePath(); x.clip();
+    x.strokeStyle = "#ffd29a"; x.shadowColor = "#ff7a3c"; x.shadowBlur = 14; x.lineCap = "round";
     const branch = (px, py, a, len, w, depth) => {
       if (depth > 4 || len < 12) return;
       x.lineWidth = w; x.beginPath(); x.moveTo(px, py);
@@ -655,8 +658,8 @@ function start() {
       pts = next;
     }
     const branches = [];
-    for (let k = 0; k < 3; k++) { const i = Math.floor(pts.length * (0.25 + Math.random() * 0.5)), [bx, by] = pts[i];
-      const a = Math.atan2(y1 - y0, x1 - x0) + (Math.random() - 0.5) * 1.6, L = 60 + Math.random() * 140;
+    for (let k = 0; k < 5; k++) { const i = Math.floor(pts.length * (0.15 + Math.random() * 0.7)), [bx, by] = pts[i];
+      const a = Math.atan2(y1 - y0, x1 - x0) + (Math.random() - 0.5) * 1.8, L = 80 + Math.random() * 220;
       branches.push(makeBoltSimple(bx, by, bx + Math.cos(a) * L, by + Math.sin(a) * L)); }
     return { pts, branches };
   }
@@ -669,36 +672,44 @@ function start() {
     if (!bctx) return;
     bctx.clearRect(0, 0, innerWidth, innerHeight);
     const W = innerWidth, H = innerHeight;
-    // while the stone cracks: arcs from both screen edges straight into it
     if (cracking > 0.05 && !broken) {
+      // while the stone cracks: bolts from beyond both screen edges strike the stone's sides
       reseed -= dt;
       if (reseed <= 0) {
-        reseed = 0.06;
-        const c = tmpA.set(0, 1.3, END_Z).project(camera), cx = ((c.x + 1) / 2) * W, cy = ((1 - c.y) / 2) * H;
-        bolts = [makeBolt(0, H * (0.2 + Math.random() * 0.5), cx, cy, 0.45), makeBolt(W, H * (0.2 + Math.random() * 0.5), cx, cy, 0.45)];
-        if (cracking > 0.6) bolts.push(makeBolt(Math.random() < 0.5 ? 0 : W, H * Math.random() * 0.3, cx, cy, 0.5));
-        bolts.forEach((b) => (b.col = "#ffe2c4", b.glow = "#ff7a3c", b.life = 1));
+        reseed = 0.07;
+        const pt = (x, y) => { const v = tmpA.set(x, y, END_Z).project(camera); return [((v.x + 1) / 2) * W, ((1 - v.y) / 2) * H]; };
+        const L = pt(-1.0, 0.6 + Math.random() * 1.6), R = pt(1.0, 0.6 + Math.random() * 1.6), T = pt((Math.random() - 0.5) * 1.2, 2.35);
+        bolts = [makeBolt(-30, H * (0.05 + Math.random() * 0.45), L[0], L[1], 0.42), makeBolt(W + 30, H * (0.05 + Math.random() * 0.45), R[0], R[1], 0.42)];
+        if (cracking > 0.55) bolts.push(makeBolt(Math.random() < 0.5 ? -30 : W + 30, -20, T[0], T[1], 0.45));
+        bolts.forEach((b) => (b.col = "#fff3e2", b.glow = "#ff7a3c", b.life = 1));
+        lightningFlash = Math.max(lightningFlash, 0.35 * cracking);
       }
     } else if (creep > 0.2) {
-      // during the walk: a bolt cracks in from a random side every few seconds
+      // during the walk: every few seconds a bolt tears across the sky from beyond the left or right edge
       nextStrike -= dt;
       if (nextStrike <= 0) {
-        nextStrike = 2.2 + Math.random() * 3;
-        const fromLeft = Math.random() < 0.5;
-        const b = makeBolt(fromLeft ? 0 : W, H * Math.random() * 0.35, W * (fromLeft ? 0.35 + Math.random() * 0.25 : 0.4 + Math.random() * 0.25), H * (0.35 + Math.random() * 0.25), 0.55);
-        b.col = "#f2f4ff"; b.glow = "#8fa8ff"; b.life = 1; bolts = [b];
+        nextStrike = 2.4 + Math.random() * 3.2;
+        const fromLeft = Math.random() < 0.5, x0 = fromLeft ? -40 : W + 40;
+        const main = makeBolt(x0, H * Math.random() * 0.3, W * (fromLeft ? 0.55 + Math.random() * 0.35 : 0.1 + Math.random() * 0.35), H * (0.5 + Math.random() * 0.2), 0.5);
+        main.col = "#ffffff"; main.glow = "#9fb6ff"; main.life = 1;
+        bolts = [main];
+        if (Math.random() < 0.6) { const twin = makeBolt(x0, H * Math.random() * 0.2, W * (fromLeft ? 0.3 : 0.7), H * (0.35 + Math.random() * 0.2), 0.55); twin.col = "#eef2ff"; twin.glow = "#9fb6ff"; twin.life = 0.8; bolts.push(twin); }
         lightningFlash = 1;
       }
-      bolts.forEach((b) => (b.life -= dt * 4));
+      bolts.forEach((b) => (b.life -= dt * 3.2));
       bolts = bolts.filter((b) => b.life > 0);
     } else bolts = [];
+    bctx.globalCompositeOperation = "lighter";
     for (const b of bolts) {
-      const a = Math.min(1, b.life) * (0.75 + Math.random() * 0.25) * (cracking > 0.05 && !broken ? cracking : 1);
-      strokeBolt(b.pts, 7, b.glow, b.glow, a * 0.35); strokeBolt(b.pts, 2.4, b.glow, b.col, a);
-      b.branches.forEach((br) => strokeBolt(br, 1.4, b.glow, b.col, a * 0.7));
+      const flick = 0.7 + Math.random() * 0.3, a = Math.min(1, b.life) * flick * (cracking > 0.05 && !broken ? Math.max(0.5, cracking) : 1);
+      strokeBolt(b.pts, 16, b.glow, b.glow, a * 0.16);           // wide soft glow
+      strokeBolt(b.pts, 6, b.glow, b.glow, a * 0.45);            // inner glow
+      strokeBolt(b.pts, 2.4, b.glow, b.col, a);                  // white-hot core
+      b.branches.forEach((br) => { strokeBolt(br, 5, b.glow, b.glow, a * 0.3); strokeBolt(br, 1.5, b.glow, b.col, a * 0.85); });
     }
+    bctx.globalCompositeOperation = "source-over";
     bctx.globalAlpha = 1; bctx.shadowBlur = 0;
-    lightningFlash *= Math.pow(0.001, dt);
+    lightningFlash *= Math.pow(0.0005, dt);
   }
   let lightningFlash = 0;
 
@@ -720,7 +731,7 @@ function start() {
     if (lenis) lenis.raf(time);
     const target = progress();
     p += (target - p) * Math.min(1, dt * 7);
-    if (first) { p = target; first = false; }
+    if (first || test.has("at")) { p = target; first = false; }   // (test mode: no easing)
 
     const night = smooth(0.13, 0.28, p);      // day → night
     const rise = (d) => ease(clamp((p - 0.17 - d) / 0.12)); // stones come up out of the ground
@@ -784,7 +795,8 @@ function start() {
     }
     const strike = (t % 7.3) < 0.09 ? 1 : (t % 7.3) > 0.16 && (t % 7.3) < 0.24 ? 0.6 : 0;
     lightning.intensity = creep * (strike * 3.2 + lightningFlash * 6);
-    if (creep * strike > 0) { scene.background.lerp(new THREE.Color("#3a4560"), creep * strike * 0.5); scene.fog.color.copy(scene.background); }
+    const flashK = Math.max(strike * 0.5, lightningFlash * 0.75) * creep;
+    if (flashK > 0.01) { scene.background.lerp(new THREE.Color("#46557a"), flashK); scene.fog.color.copy(scene.background); }
     crows.forEach((c, i) => {
       const u = c.userData, a = t * u.sp + u.ph, away = ease(clamp((p - 0.9) / 0.08));
       c.position.set(Math.cos(a) * u.r + away * (i - 4) * 3, u.h + Math.sin(t * 1.3 + i) * 0.3 + away * 22, END_Z + Math.sin(a) * u.r - away * 70);

@@ -299,7 +299,7 @@ module.exports = async (req, res) => {
       // Run one night task right now (for testing).
       if (url.pathname === "/admin/run") {
         const task = url.searchParams.get("task");
-        if (!["prefill", "news", "recheck", "premortems"].includes(task)) return send(res, 400, { error: "task must be prefill, news, recheck or premortems" });
+        if (!["prefill", "news", "recheck", "premortems", "acquisitions"].includes(task)) return send(res, 400, { error: "task must be prefill, news, recheck, premortems or acquisitions" });
         return send(res, 200, await jobs.JOB.submitJob(jobFor(task)));
       }
 

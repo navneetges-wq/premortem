@@ -327,8 +327,10 @@ Strict rules:
   reasons ["Reason not reported"], one_line "Reason not reported".
 - status: "shut down" (the whole company, or the whole business line, closed), "running", or "acquired"
   (bought by or merged into another company). Leaving some countries or cities, closing some stores, or
-  layoffs is NOT shut down: it is still "running" (mention the pull-back in reasons). If articles
-  disagree, trust the newest one.
+  layoffs is NOT shut down: it is still "running" (mention the pull-back in reasons). If ANY article
+  says the company was acquired, bought, taken over or merged into another company, its status is
+  "acquired" — even if its app or brand still runs under the new owner. (Raising money from an
+  investor is NOT being acquired.) If articles disagree, trust the newest one.
 - match: "same idea" if it did basically the same thing as the idea above, otherwise "similar idea".
 - what_they_did: 2 short lines in plain English.
 - story: 2–3 sentences: how it started, how it grew, how it shut down or where it is now.
@@ -420,6 +422,17 @@ function mentions(article, name) {
   return text.includes(core) || core.split(/\s+/).filter((w) => w.length >= 3).every((w) => text.includes(w));
 }
 
+// Did an article clearly say this company was bought / taken over / merged? (only exact phrasings,
+// so "Toppr acquired 1 lakh users" never counts — "Toppr was acquired by Byju's" does)
+function wasAcquired(name, articles) {
+  const core = name.replace(/\(.*?\)/g, "").trim();
+  if (core.length < 3) return false;
+  const n = core.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const bought = new RegExp(`\\b${n}\\b[^.]{0,40}?\\b(?:was|has been|had been|got|is being|being)?\\s*(?:acquired|bought|taken over|absorbed)\\s+by\\b`, "i");
+  const buyer = new RegExp(`\\b(?:acquired|acquires|acquiring|bought|buys|took over|takes over|acquisition of|takeover of|merged with|merger with)\\s+(?:the\\s+)?(?:[a-z-]+\\s+){0,2}${n}\\b`, "i");
+  return articles.some((a) => a.text.split(/(?<=[.!?])\s+/).some((sentence) => bought.test(sentence) || buyer.test(sentence)));
+}
+
 // Does a sentence name this company? (so a quote about another company is never shown as proof)
 const namesIt = (sentence, name) => mentions({ title: "", text: sentence }, name);
 
@@ -460,6 +473,9 @@ function cleanUp(companies, articles) {
     }));
     if (c.status === "shut down" && !causes.length) causes = [{ cause: "reason not reported", proof: "" }];
     const risksHandled = c.status === "running" ? (c.risks_handled || []).filter((r) => r.cause !== "reason not reported") : [];
+
+    // The articles say it was bought → "acquired", even if the AI said "running".
+    if (c.status === "running" && wasAcquired(c.name, sources.map((u) => articles.find((a) => a.url === u)).filter(Boolean))) c.status = "acquired";
 
     const { source_numbers, ...rest } = c;
     kept.set(key, { ...rest, causes, risks_handled: risksHandled, website, founder_writeup_url: founderUrl, founder_words: founderWords, sources });
@@ -787,4 +803,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { score, cleanUp, makeReport, premortemText, sortIdea, collectArticles, findCompanies, describeCompanies, buildPremortem, simpleName, checkKeys, askGemini, searchWeb, NICHES, matchNiche, closestToIdea, tavilyCreditsLeft, riskScore };
+module.exports = { wasAcquired, score, cleanUp, makeReport, premortemText, sortIdea, collectArticles, findCompanies, describeCompanies, buildPremortem, simpleName, checkKeys, askGemini, searchWeb, NICHES, matchNiche, closestToIdea, tavilyCreditsLeft, riskScore };

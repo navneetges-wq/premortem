@@ -8,11 +8,11 @@ const store = require("./store");
 const { researchNiche, refreshPremortem } = require("./research");
 
 // Free-plan budget: Tavily gives 1,000 searches a month; one business type uses 6.
-const PREFILL_PER_NIGHT = 8;       // 48 searches a night → all 80 types in about 10 nights
+const PREFILL_PER_NIGHT = 2;       // 12 searches a night (about 360 a month) — leaves most of the free 1,000 for visitors
 const REFRESH_AFTER_DAYS = 30;     // once all are done, re-research types older than this
 const RECHECK_PER_MONTH = 25;      // 25 searches a month
 const TIME_BUDGET_MS = 12 * 60000; // jobs may run 15 minutes; stop starting new work after 12
-const PREFILL_RESERVE = 300;       // keep at least this many Tavily credits for real visitors
+const PREFILL_RESERVE = 450;       // keep at least this many Tavily credits for real visitors
 
 const FEEDS = ["https://inc42.com/feed/", "https://yourstory.com/feed"];
 const SMALL_MODEL = "gemma-4-31b-it"; // small free model for sorting headlines (falls back to Flash-Lite)
@@ -134,7 +134,7 @@ async function recheck() {
   for (const c of running) {
     if (Date.now() - start > TIME_BUDGET_MS) break;
     try {
-      const results = await find.searchWeb({ query: `${c.name} ${c._niche} shut down OR closed OR still operating`, news: false, failure: false });
+      const results = await find.searchWeb({ query: `${c.name} ${c._niche} shut down OR closed OR acquired OR still operating`, news: false, failure: false });
       const articles = results.slice(0, 5).map((r) => ({ url: r.url, title: r.title || "", date: (r.published_date || "").slice(0, 10), text: `${r.content || ""}\n${r.raw_content || ""}`.slice(0, 6000) }));
       const numbers = articles.map((_, i) => i + 1);
       const described = await find.describeCompanies(c._niche, c._niche, articles, [{ name: c.name, numbers }]);
@@ -163,4 +163,47 @@ async function premortems() {
   return log;
 }
 
-module.exports = { prefill, news, recheck, premortems };
+// ---------- acquisitions: find "running" companies that were actually bought ----------
+// Step 1 (free): the AI only points at names worth checking. Step 2: one web search each, and the
+// status changes ONLY if a fetched article clearly says it was acquired (nothing from memory).
+const ACQ_CHECKS = 40;               // at most 40 searches per run
+async function acquisitions() {
+  const start = Date.now(), log = [], touched = new Set();
+  const byNiche = new Map();
+  for (const c of await store.allCompanies()) if (c.status === "running") { if (!byNiche.has(c._niche)) byNiche.set(c._niche, []); byNiche.get(c._niche).push(c); }
+  let checks = 0;
+  // One business type at a time: ask, then check its suspects right away — so every run makes real progress
+  // (a re-run skips anything already fixed, because it's no longer "running").
+  for (const [niche, list] of byNiche) {
+    if (Date.now() - start > TIME_BUDGET_MS || checks >= ACQ_CHECKS) { log.push("Stopped for this run (time or search budget) — run again to continue."); break; }
+    let names = [];
+    try {
+      const r = await find.askGemini(`Below are companies in the "${niche}" business, all marked as still running and independent.
+List ONLY the names you are confident were later acquired by, bought by, or merged into another company.
+If unsure, leave it out. Return an empty list if none.
+
+${list.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { names: { type: "ARRAY", items: { type: "STRING" } } }, required: ["names"] }, 0);
+      names = r.names || [];
+    } catch (err) { log.push(`${niche}: AI check failed (${err.message})`); continue; }
+    for (const name of names) {
+      const c = list.find((x) => x.name === name);
+      if (!c || checks >= ACQ_CHECKS || Date.now() - start > TIME_BUDGET_MS) continue;
+      checks++;
+      try {
+        const results = await find.searchWeb({ query: `${c.name} acquired by`, news: false, failure: false });
+        const articles = results.slice(0, 5).map((r) => ({ url: r.url, title: r.title || "", date: (r.published_date || "").slice(0, 10), text: `${r.content || ""}\n${r.raw_content || ""}`.slice(0, 6000) }));
+        if (!find.wasAcquired(c.name, articles)) { log.push(`${c.name}: no clear proof — left as running`); continue; }
+        const described = await find.describeCompanies(niche, niche, articles, [{ name: c.name, numbers: articles.map((_, i) => i + 1) }]);
+        const kept = find.cleanUp(described, articles).map((k) => ({ ...k, name: c.name, status: "acquired" }));
+        if (!kept.length) { log.push(`${c.name}: proof found but no usable source — skipped`); continue; }
+        const r = await store.mergeCompanies(niche, kept, find.simpleName);
+        touched.add(niche); log.push(`${c.name}: now ACQUIRED (${r.updated} updated)`);
+      } catch (err) { log.push(`${c.name}: failed (${err.message})`); }
+    }
+  }
+  for (const niche of touched) await refreshPremortem(niche, niche);
+  log.push(`Done: ${checks} checked, ${touched.size} business types updated.`);
+  return log;
+}
+
+module.exports = { prefill, news, recheck, premortems, acquisitions };
