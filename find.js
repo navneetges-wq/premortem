@@ -88,11 +88,18 @@ async function askGemini(prompt, schema, temperature, model = GEMINI_MODEL) {
   const body = JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig });
 
   for (let attempt = 1; attempt <= 3; attempt++) {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": keys.GEMINI_API_KEY },
-      body,
-    });
+    let res;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": keys.GEMINI_API_KEY },
+        body,
+        signal: AbortSignal.timeout(90000), // never wait more than 90 seconds for one answer
+      });
+    } catch (err) {
+      if (attempt < 3) continue; // timed out or network hiccup: ask again
+      throw new Error(`Gemini didn't answer (${err.name === "TimeoutError" ? "timed out" : err.message})`);
+    }
     if (res.ok) {
       const data = await res.json();
       const parts = data.candidates?.[0]?.content?.parts || [];
@@ -175,6 +182,7 @@ Business idea: "${idea}"`;
 // ---------- Step 2: run the searches on Tavily ----------
 async function searchWeb({ query, news, sites, failure }) {
   const res = await fetch("https://api.tavily.com/search", {
+    signal: AbortSignal.timeout(45000), // never wait more than 45 seconds for one search
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${keys.TAVILY_API_KEY}` },
     body: JSON.stringify({
