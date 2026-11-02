@@ -70,6 +70,16 @@ async function mergeCompanies(niche, found, simpleName) {
   return { added, updated };
 }
 
+// Correct one company's status by hand (e.g. a wrong "acquired"). Returns true if it was found.
+async function setStatus(niche, name, status, simpleName) {
+  const c = (await companiesFor(niche)).find((x) => simpleName(x.name) === simpleName(name));
+  if (!c) return false;
+  const fixed = { ...c, status };
+  delete fixed._rowid;
+  await tables().companies.updateRow({ ROWID: c._rowid, status, details: fitText(fixed) });
+  return true;
+}
+
 const pickStatus = (c) => ({ status: c.status, status_year: c.status_year, causes: c.causes, risks_handled: c.risks_handled, one_line: c.one_line, reasons: c.reasons });
 
 // ---------- niches ----------
@@ -130,4 +140,4 @@ async function recentSearchFor(idea, days) {
   });
 }
 
-module.exports = { companiesFor, allCompanies, mergeCompanies, allNiches, nicheRow, saveNiche, newSearch, updateSearch, getSearch, recentSearchFor, saveMistake, allMistakes, addSubscriber, allSubscribers };
+module.exports = { setStatus, companiesFor, allCompanies, mergeCompanies, allNiches, nicheRow, saveNiche, newSearch, updateSearch, getSearch, recentSearchFor, saveMistake, allMistakes, addSubscriber, allSubscribers };

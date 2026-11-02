@@ -297,10 +297,17 @@ module.exports = async (req, res) => {
       if (url.pathname === "/admin/job") return send(res, 200, await jobs.JOB.getJob(url.searchParams.get("id")));
 
       // Run one night task right now (for testing).
+      // The last log of a background task (kept 24h).
+      if (url.pathname === "/admin/joblog") {
+        try { return send(res, 200, JSON.parse(await new Cache().segment().getValue(`log${url.searchParams.get("task")}`))); } catch { return send(res, 200, { log: [] }); }
+      }
+
       if (url.pathname === "/admin/run") {
         const task = url.searchParams.get("task");
-        if (!["prefill", "news", "recheck", "premortems", "acquisitions"].includes(task)) return send(res, 400, { error: "task must be prefill, news, recheck, premortems or acquisitions" });
-        return send(res, 200, await jobs.JOB.submitJob(jobFor(task)));
+        if (!["prefill", "news", "recheck", "premortems", "acquisitions", "fix"].includes(task)) return send(res, 400, { error: "task must be prefill, news, recheck, premortems, acquisitions or fix" });
+        const job = jobFor(task);
+        for (const k of ["niche", "name", "status"]) if (url.searchParams.get(k)) job.params[k] = url.searchParams.get(k);
+        return send(res, 200, await jobs.JOB.submitJob(job));
       }
 
       // Create the 3 schedules (India time).

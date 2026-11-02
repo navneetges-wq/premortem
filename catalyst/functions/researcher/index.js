@@ -28,8 +28,10 @@ module.exports = async (jobRequest, context) => {
       await store.updateSearch(searchId, "done", summary);
       console.log(summary);
     } else {
-      const log = await nightly[task]();
+      const log = await nightly[task](params);
       console.log(`${task}:\n${log.join("\n")}`);
+      // keep the last log for 24h so it can be read from /admin/joblog?task=...
+      try { const seg = new Cache().segment(), v = JSON.stringify({ at: new Date().toISOString(), log }).slice(0, 9000); try { await seg.put(`log${task}`, v, 24); } catch { await seg.update(`log${task}`, v, 24); } } catch (err) { console.error("joblog", err.message); }
     }
     context.closeWithSuccess();
   } catch (err) {

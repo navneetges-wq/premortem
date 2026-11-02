@@ -428,8 +428,8 @@ function wasAcquired(name, articles) {
   const core = name.replace(/\(.*?\)/g, "").trim();
   if (core.length < 3) return false;
   const n = core.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const bought = new RegExp(`\\b${n}\\b[^.]{0,40}?\\b(?:was|has been|had been|got|is being|being)?\\s*(?:acquired|bought|taken over|absorbed)\\s+by\\b`, "i");
-  const buyer = new RegExp(`\\b(?:acquired|acquires|acquiring|bought|buys|took over|takes over|acquisition of|takeover of|merged with|merger with)\\s+(?:the\\s+)?(?:[a-z-]+\\s+){0,2}${n}\\b`, "i");
+  const bought = new RegExp(`\\b${n}\\b(?:(?!acquir|buys|bought|merg)[^.]){0,40}?\\b(?:was|has been|had been|got|is being|being)?\\s*(?:acquired|bought|taken over|absorbed)\\s+by\\b`, "i");
+  const buyer = new RegExp(`\\b(?:acquired|acquires|acquiring|bought|buys|took over|takes over|acquisition of|takeover of|merged with|merger with)\\s+(?:the\\s+)?(?:(?!by\\b)[a-z-]+\\s+){0,3}${n}\\b`, "i");
   return articles.some((a) => a.text.split(/(?<=[.!?])\s+/).some((sentence) => bought.test(sentence) || buyer.test(sentence)));
 }
 

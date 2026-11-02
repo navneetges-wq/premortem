@@ -167,24 +167,27 @@ async function premortems() {
 // Step 1 (free): the AI only points at names worth checking. Step 2: one web search each, and the
 // status changes ONLY if a fetched article clearly says it was acquired (nothing from memory).
 const ACQ_CHECKS = 40;               // at most 40 searches per run
-async function acquisitions() {
+async function acquisitions(params = {}) {
   const start = Date.now(), log = [], touched = new Set();
   const byNiche = new Map();
-  for (const c of await store.allCompanies()) if (c.status === "running") { if (!byNiche.has(c._niche)) byNiche.set(c._niche, []); byNiche.get(c._niche).push(c); }
+  for (const c of await store.allCompanies()) if (c.status === "running" && (!params.niche || c._niche === params.niche)) { if (!byNiche.has(c._niche)) byNiche.set(c._niche, []); byNiche.get(c._niche).push(c); }
   let checks = 0;
   // One business type at a time: ask, then check its suspects right away — so every run makes real progress
   // (a re-run skips anything already fixed, because it's no longer "running").
   for (const [niche, list] of byNiche) {
     if (Date.now() - start > TIME_BUDGET_MS || checks >= ACQ_CHECKS) { log.push("Stopped for this run (time or search budget) — run again to continue."); break; }
+    // Ask in small groups of 8, with a yes/no for every company (a long list makes the AI skip names).
     let names = [];
-    try {
-      const r = await find.askGemini(`Below are companies in the "${niche}" business, all marked as still running and independent.
-List ONLY the names you are confident were later acquired by, bought by, or merged into another company.
-If unsure, leave it out. Return an empty list if none.
+    for (let i = 0; i < list.length; i += 8) {
+      const group = list.slice(i, i + 8);
+      try {
+        const r = await find.askGemini(`For each company below (all in the "${niche}" business), answer: was it later acquired by,
+bought by, or merged into another company? Answer true only if you are confident; otherwise false.
 
-${list.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { names: { type: "ARRAY", items: { type: "STRING" } } }, required: ["names"] }, 0);
-      names = r.names || [];
-    } catch (err) { log.push(`${niche}: AI check failed (${err.message})`); continue; }
+${group.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { answers: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, acquired: { type: "BOOLEAN" } }, required: ["name", "acquired"] } } }, required: ["answers"] }, 0);
+        names.push(...(r.answers || []).filter((x) => x.acquired).map((x) => x.name));
+      } catch (err) { log.push(`${niche}: AI check failed (${err.message})`); }
+    }
     for (const name of names) {
       const c = list.find((x) => x.name === name);
       if (!c || checks >= ACQ_CHECKS || Date.now() - start > TIME_BUDGET_MS) continue;
@@ -206,4 +209,12 @@ ${list.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { n
   return log;
 }
 
-module.exports = { prefill, news, recheck, premortems, acquisitions };
+// ---------- fix: correct one company's status by hand, then rebuild that business type's premortem ----------
+async function fix({ niche, name, status } = {}) {
+  if (!niche || !name || !["running", "shut down", "acquired"].includes(status)) return ["Need niche, name and status (running, shut down or acquired)."];
+  if (!(await store.setStatus(niche, name, status, find.simpleName))) return [`${name}: not found in ${niche}`];
+  await refreshPremortem(niche, niche);
+  return [`${name}: now ${status} in ${niche}`];
+}
+
+module.exports = { prefill, news, recheck, premortems, acquisitions, fix };
