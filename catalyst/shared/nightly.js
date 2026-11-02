@@ -168,6 +168,7 @@ async function premortems() {
 // Step 1 (free): the AI only points at names worth checking. Step 2: one web search each, and the
 // status changes ONLY if a fetched article clearly says it was acquired (nothing from memory).
 const ACQ_CHECKS = 40;               // at most 40 searches per run
+const ACQ_BUDGET_MS = 9 * 60000;     // leave room to rebuild premortems before the 15-minute limit
 async function acquisitions(params = {}) {
   const start = Date.now(), log = [], touched = new Set();
   const byNiche = new Map();
@@ -183,10 +184,11 @@ async function acquisitions(params = {}) {
   let next = 0;
   for (let i = from; i < order.length; i++) {
     const niche = order[i], list = byNiche.get(niche);
-    if (Date.now() - start > TIME_BUDGET_MS || checks >= ACQ_CHECKS) { next = i; log.push(`Stopped at business type ${i + 1} of ${order.length} — run again to continue.`); break; }
+    if (Date.now() - start > ACQ_BUDGET_MS || checks >= ACQ_CHECKS) { next = i; log.push(`Stopped at business type ${i + 1} of ${order.length} — run again to continue.`); break; }
     // Ask in small groups of 8, with a yes/no for every company (a long list makes the AI skip names).
-    let names = [];
+    let names = [], cut = false;
     for (let i = 0; i < list.length; i += 8) {
+      if (Date.now() - start > ACQ_BUDGET_MS) { cut = true; break; }
       const group = list.slice(i, i + 8);
       try {
         const r = await find.askGemini(`For each company below (all in the "${niche}" business), answer: was it later acquired by,
@@ -198,7 +200,8 @@ ${group.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { 
     }
     for (const name of names) {
       const c = list.find((x) => x.name === name);
-      if (!c || checks >= ACQ_CHECKS || Date.now() - start > TIME_BUDGET_MS) continue;
+      if (!c) continue;
+      if (checks >= ACQ_CHECKS || Date.now() - start > ACQ_BUDGET_MS) { cut = true; continue; }
       checks++;
       try {
         const results = await find.searchWeb({ query: `${c.name} acquired by`, news: false, failure: false });
@@ -211,10 +214,10 @@ ${group.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { 
         touched.add(niche); log.push(`${c.name}: now ACQUIRED (${r.updated} updated)`);
       } catch (err) { log.push(`${c.name}: failed (${err.message})`); }
     }
-    if (checks >= ACQ_CHECKS && names.some((n) => !log.some((l) => l.startsWith(`${n}:`)))) { next = i; log.push(`Stopped inside ${niche} — run again to continue.`); break; }
+    if (touched.has(niche)) await refreshPremortem(niche, niche);
+    if (cut) { next = i; log.push(`Stopped inside ${niche} — run again to continue.`); break; }
   }
   if (!params.niche) { try { await seg.put("acqnext", String(next), 48); } catch { try { await seg.update("acqnext", String(next), 48); } catch {} } }
-  for (const niche of touched) await refreshPremortem(niche, niche);
   log.push(`Done: ${checks} checked, ${touched.size} business types updated.${next ? "" : " Reached the end of the list."}`);
   return log;
 }
