@@ -438,7 +438,9 @@ function wasAcquired(name, articles) {
   const n = core.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const bought = new RegExp(`\\b${n}\\b(?:(?!acquir|buys|bought|merg)[^.]){0,40}?\\b(?:was|has been|had been|got|is being|being)?\\s*(?:acquired|bought|taken over|absorbed)\\s+by\\b`, "i");
   const buyer = new RegExp(`\\b(?:acquired|acquires|acquiring|bought|buys|took over|takes over|acquisition of|takeover of|merged with|merger with)\\s+(?:the\\s+)?(?:(?!by\\b)[a-z-]+\\s+){0,3}${n}\\b`, "i");
-  return articles.some((a) => a.text.split(/(?<=[.!?])\s+/).some((sentence) => bought.test(sentence) || buyer.test(sentence)));
+  // Going public through a SPAC is not being bought.
+  const spac = /\bSPAC\b|special purpose acquisition/i;
+  return articles.some((a) => a.text.split(/(?<=[.!?])\s+/).some((sentence) => !spac.test(sentence) && (bought.test(sentence) || buyer.test(sentence))));
 }
 
 // Does a sentence name this company? (so a quote about another company is never shown as proof)
