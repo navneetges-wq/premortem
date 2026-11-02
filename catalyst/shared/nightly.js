@@ -5,6 +5,7 @@
 
 const find = require("./find");
 const store = require("./store");
+const { Cache } = require("@zcatalyst/cache");
 const { researchNiche, refreshPremortem } = require("./research");
 
 // Free-plan budget: Tavily gives 1,000 searches a month; one business type uses 6.
@@ -172,10 +173,17 @@ async function acquisitions(params = {}) {
   const byNiche = new Map();
   for (const c of await store.allCompanies()) if (c.status === "running" && (!params.niche || c._niche === params.niche)) { if (!byNiche.has(c._niche)) byNiche.set(c._niche, []); byNiche.get(c._niche).push(c); }
   let checks = 0;
-  // One business type at a time: ask, then check its suspects right away — so every run makes real progress
-  // (a re-run skips anything already fixed, because it's no longer "running").
-  for (const [niche, list] of byNiche) {
-    if (Date.now() - start > TIME_BUDGET_MS || checks >= ACQ_CHECKS) { log.push("Stopped for this run (time or search budget) — run again to continue."); break; }
+  // One business type at a time: ask, then check its suspects right away. A full run remembers where it
+  // stopped (for 48h), so the next run carries on from there instead of re-checking the same ones.
+  const order = [...byNiche.keys()].sort();
+  const seg = new Cache().segment();
+  let from = 0;
+  if (!params.niche) try { from = Number(await seg.getValue("acqnext")) || 0; } catch {}
+  if (from >= order.length) from = 0;
+  let next = 0;
+  for (let i = from; i < order.length; i++) {
+    const niche = order[i], list = byNiche.get(niche);
+    if (Date.now() - start > TIME_BUDGET_MS || checks >= ACQ_CHECKS) { next = i; log.push(`Stopped at business type ${i + 1} of ${order.length} — run again to continue.`); break; }
     // Ask in small groups of 8, with a yes/no for every company (a long list makes the AI skip names).
     let names = [];
     for (let i = 0; i < list.length; i += 8) {
@@ -203,9 +211,11 @@ ${group.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { 
         touched.add(niche); log.push(`${c.name}: now ACQUIRED (${r.updated} updated)`);
       } catch (err) { log.push(`${c.name}: failed (${err.message})`); }
     }
+    if (checks >= ACQ_CHECKS && names.some((n) => !log.some((l) => l.startsWith(`${n}:`)))) { next = i; log.push(`Stopped inside ${niche} — run again to continue.`); break; }
   }
+  if (!params.niche) { try { await seg.put("acqnext", String(next), 48); } catch { try { await seg.update("acqnext", String(next), 48); } catch {} } }
   for (const niche of touched) await refreshPremortem(niche, niche);
-  log.push(`Done: ${checks} checked, ${touched.size} business types updated.`);
+  log.push(`Done: ${checks} checked, ${touched.size} business types updated.${next ? "" : " Reached the end of the list."}`);
   return log;
 }
 
