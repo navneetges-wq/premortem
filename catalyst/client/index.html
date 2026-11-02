@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>premortem — see who already tried your idea</title>
+  <meta name="description" content="Type your business idea in one line. See who already tried it, how they failed, your risk score and the warning signs to watch for.">
+  <!-- Link preview when shared on WhatsApp / LinkedIn / X -->
+  <meta property="og:title" content="premortem — see who already tried your idea">
+  <meta property="og:description" content="Before you build it, see who already tried — and exactly how they failed.">
+  <meta property="og:image" content="https://whotriedit-60093906253.development.catalystserverless.in/app/assets/share-card.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F4F1EA">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=47">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js" } }
+  </script>
+</head>
+<body id="top">
+  <div class="shell">
+    <!-- Top bar -->
+    <nav class="nav">
+      <a href="#/" class="wordmark" aria-label="premortem home"><img src="assets/logo-header.png" alt="premortem" width="194" height="30"></a>
+      <div class="nav-links">
+        <a href="#/" data-scroll="how">How it works</a>
+        <a href="#/" data-scroll="search" class="nav-cta">Run a premortem</a>
+      </div>
+    </nav>
+
+    <main id="app"></main>
+
+    <footer class="footer card">
+      <div class="footer-top">
+        <div>
+          <img src="assets/logo-header.png" alt="premortem" class="footer-logo">
+          <p>Startup failure research for founders. See who already tried your idea, how they failed, and what to watch for.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#/" data-scroll="how">How it works</a>
+          <a href="#/" data-scroll="search">Run a premortem</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Only your one-line idea is sent to our AI. Every company comes from a public news source, linked on its card.</span>
+        <a href="#top" class="back-top">Back to top ↑</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Company detail panel (slides in from the right) -->
+  <div id="overlay" class="overlay" hidden></div>
+  <aside id="panel" class="panel" aria-hidden="true" role="dialog" aria-label="Company details"></aside>
+
+  <script src="ink.js?v=41"></script>
+  <script src="hover.js?v=41"></script>
+  <script src="obituary.js?v=6"></script>
+  <script src="app.js?v=45"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+keys.txt
+results/
+.gstack/
+catalyst/functions/*/catalyst-config.json
+catalyst/functions/*/node_modules/
+catalyst/.catalystrc
+
+# never publish
+.DS_Store
+**/.gstack/
+# copies made by deploy.js (the real files live in /find.js, /niches.js and catalyst/shared/)
+catalyst/functions/*/find.js
+catalyst/functions/*/niches.js
+catalyst/functions/*/store.js
+catalyst/functions/*/research.js
+catalyst/functions/*/nightly.js
+# video build leftovers
+promo/encode
+promo/frames*/
+promo/audio*.wav
+promo/audio*.m4a
+promo/cues*.json
+promo/test*
+promo/render*.log

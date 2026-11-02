@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#000;overflow:hidden} #stage{position:relative;overflow:hidden} *{box-sizing:border-box}</style>
+</head><body><div id="stage"></div>
+<script src="engine.js"></script>
+<script>
+// video.html?v=1 → loads v1.js (which sets W, H, DURATION, BPM, SCENES, CUES)
+(async () => {
+  window.DATA = await (await fetch("data.json")).json();
+  const v = new URLSearchParams(location.search).get("v") || "1";
+  const s = document.createElement("script"); s.src = `v${v}.js?` + Date.now();
+  s.onload = async () => {
+    const st = document.getElementById("stage"); st.style.width = W + "px"; st.style.height = H + "px";
+    await document.fonts.load("800 40px Manrope"); await document.fonts.load("500 40px 'JetBrains Mono'"); await document.fonts.load("600 40px Manrope"); await document.fonts.load("500 40px Manrope");
+    renderAt(+(new URLSearchParams(location.search).get("t") || 0));
+    window.READY = true;
+  };
+  document.body.appendChild(s);
+})();
+</script></body></html>

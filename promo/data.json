@@ -1,0 +1,1780 @@
+{
+ "qc": {
+  "niche": "quick commerce",
+  "risk": 47,
+  "label": "Medium",
+  "dead": 10,
+  "total": 27,
+  "causes": [
+   [
+    "operations too hard or costly",
+    3
+   ],
+   [
+    "lost money on every order",
+    3
+   ],
+   [
+    "ran out of money",
+    2
+   ]
+  ],
+  "basedOn": 10,
+  "checklist": [
+   "Can your dark stores achieve positive unit economics where each order covers its own delivery labor?",
+   "Do you have 12+ months of cash runway remaining without relying on immediate new fundraising?",
+   "Are your daily inventory holding and operational expenses strictly controlled to prevent excessive cash burn?",
+   "Is your customer order frequency high enough to cover the high overhead of instant delivery infrastructure?",
+   "Do you have sufficient capital and scale to defend your market share against massive, well-funded competitors?"
+  ],
+  "deadCos": [
+   {
+    "name": "Klydo",
+    "closed": 2026,
+    "started": 2025,
+    "cause": "operations too hard or costly",
+    "src": [
+     "ecotextile.com",
+     "instagram.com"
+    ]
+   },
+   {
+    "name": "Jokr",
+    "closed": 2023,
+    "started": 2021,
+    "cause": "operations too hard or costly",
+    "src": [
+     "bing.com"
+    ]
+   },
+   {
+    "name": "JioMart Express",
+    "closed": 0,
+    "started": 2021,
+    "cause": "reason not reported",
+    "src": [
+     "gtechnosoft.in",
+     "ithinklogistics.com"
+    ]
+   },
+   {
+    "name": "Airlift",
+    "closed": 2022,
+    "started": 2019,
+    "cause": "ran out of money",
+    "src": [
+     "tactyqal.com"
+    ]
+   },
+   {
+    "name": "Buyk",
+    "closed": 2022,
+    "started": 0,
+    "cause": "lost money on every order",
+    "src": [
+     "restofworld.org"
+    ]
+   },
+   {
+    "name": "Blip",
+    "closed": 2026,
+    "started": 0,
+    "cause": "ran out of money",
+    "src": [
+     "techinasia.com",
+     "moneycontrol.com",
+     "economictimes.indiatimes.com",
+     "economictimes.indiatimes.com"
+    ]
+   },
+   {
+    "name": "Dunzo",
+    "closed": 2025,
+    "started": 2017,
+    "cause": "beaten by bigger competitors",
+    "src": [
+     "restofworld.org",
+     "instagram.com"
+    ]
+   },
+   {
+    "name": "Gopuff",
+    "closed": 2022,
+    "started": 0,
+    "cause": "lost money on every order",
+    "src": [
+     "restofworld.org"
+    ]
+   },
+   {
+    "name": "Fridge No More",
+    "closed": 2022,
+    "started": 0,
+    "cause": "lost money on every order",
+    "src": [
+     "restofworld.org"
+    ]
+   },
+   {
+    "name": "Ola Dash",
+    "closed": 2022,
+    "started": 0,
+    "cause": "reason not reported",
+    "src": [
+     "moneycontrol.com"
+    ]
+   }
+  ],
+  "aliveCos": [
+   "Instamart (Swiggy)",
+   "Apna Mart",
+   "Slikk",
+   "Blinkit (formerly Grofers)",
+   "FirstClub",
+   "DoorDash",
+   "ZILO",
+   "KNOT",
+   "Flipkart Minutes",
+   "Zepto",
+   "Instacart",
+   "Swiggy Instamart",
+   "BigBasket BB Now",
+   "Swiggy"
+  ]
+ },
+ "fd": {
+  "niche": "food delivery",
+  "risk": 62,
+  "label": "High",
+  "dead": 14,
+  "total": 20,
+  "causes": [
+   [
+    "ran out of money",
+    4
+   ],
+   [
+    "operations too hard or costly",
+    2
+   ],
+   [
+    "beaten by bigger competitors",
+    1
+   ]
+  ],
+  "basedOn": 14,
+  "checklist": [
+   "Do you have 12+ months of cash runway without securing new funding?",
+   "Can you profitably fulfill every single delivery order today?",
+   "Are your logistics costs staying below 20 percent of your average order value?",
+   "Do you have a clear feature or pricing advantage against well-funded giants?"
+  ],
+  "deadCos": [
+   {
+    "name": "Thrive",
+    "closed": 2024,
+    "started": 2020,
+    "cause": "beaten by bigger competitors",
+    "src": [
+     "yourstory.com",
+     "techinasia.com",
+     "instagram.com"
+    ]
+   },
+   {
+    "name": "Amazon Food",
+    "closed": 2022,
+    "started": 2020,
+    "cause": "reason not reported",
+    "src": [
+     "inc42.com",
+     "inc42.com",
+     "techcrunch.com",
+     "yahoo.com"
+    ]
+   },
+   {
+    "name": "Snacc",
+    "closed": 2026,
+    "started": 2025,
+    "cause": "lost money on every order",
+    "src": [
+     "entrackr.com",
+     "moneycontrol.com",
+     "moneycontrol.com",
+     "moneycontrol.com"
+    ]
+   },
+   {
+    "name": "Tinmen",
+    "closed": 0,
+    "started": 0,
+    "cause": "reason not reported",
+    "src": [
+     "inc42.com"
+    ]
+   },
+   {
+    "name": "TinyOwl",
+    "closed": 2016,
+    "started": 0,
+    "cause": "operations too hard or costly",
+    "src": [
+     "techcrunch.com"
+    ]
+   },
+   {
+    "name": "SpoonRocket",
+    "closed": 2016,
+    "started": 0,
+    "cause": "reason not reported",
+    "src": [
+     "techcrunch.com",
+     "techcrunch.com"
+    ]
+   },
+   {
+    "name": "Zero Grocery",
+    "closed": 2022,
+    "started": 0,
+    "cause": "reason not reported",
+    "src": [
+     "foodinstitute.com"
+    ]
+   },
+   {
+    "name": "Buyk",
+    "closed": 2022,
+    "started": 2021,
+    "cause": "ran out of money",
+    "src": [
+     "cnn.com",
+     "foodinstitute.com"
+    ]
+   },
+   {
+    "name": "GoLemon",
+    "closed": 2024,
+    "started": 2022,
+    "cause": "ran out of money",
+    "src": [
+     "thecondia.com"
+    ]
+   },
+   {
+    "name": "Sprig",
+    "closed": 2017,
+    "started": 2013,
+    "cause": "operations too hard or costly",
+    "src": [
+     "techcrunch.com",
+     "techcrunch.com"
+    ]
+   },
+   {
+    "name": "Dazo",
+    "closed": 2015,
+    "started": 0,
+    "cause": "reason not reported",
+    "src": [
+     "inc42.com"
+    ]
+   },
+   {
+    "name": "FoodCourt",
+    "closed": 0,
+    "started": 0,
+    "cause": "ran out of money",
+    "src": [
+     "thecondia.com"
+    ]
+   },
+   {
+    "name": "EatFresh",
+    "closed": 0,
+    "started": 0,
+    "cause": "reason not reported",
+    "src": [
+     "inc42.com"
+    ]
+   },
+   {
+    "name": "Munchery",
+    "closed": 0,
+    "started": 0,
+    "cause": "ran out of money",
+    "src": [
+     "techcrunch.com",
+     "techcrunch.com",
+     "ideaproof.io"
+    ]
+   }
+  ],
+  "aliveCos": [
+   "Gorillas",
+   "Swish",
+   "Rappi",
+   "Zomato",
+   "Swiggy",
+   "DoorDash"
+  ]
+ },
+ "stats": {
+  "companies": 1365,
+  "shut_down": 317,
+  "business_types": 33,
+  "sources": 912
+ },
+ "gyCount": 328,
+ "gyCauses": [
+  [
+   "reason not reported",
+   142
+  ],
+  [
+   "ran out of money",
+   74
+  ],
+  [
+   "beaten by bigger competitors",
+   35
+  ],
+  [
+   "operations too hard or costly",
+   25
+  ],
+  [
+   "not enough customers wanted it",
+   17
+  ],
+  [
+   "government rules or legal trouble",
+   14
+  ],
+  [
+   "lost money on every order",
+   8
+  ],
+  [
+   "outside shock",
+   7
+  ],
+  [
+   "fraud or bad governance",
+   3
+  ],
+  [
+   "founder or team problems",
+   3
+  ]
+ ],
+ "montage": [
+  {
+   "name": "Klydo",
+   "niche": "quick commerce",
+   "started": 2025,
+   "closed": 2026,
+   "cause": "operations too hard or costly",
+   "line": "High cash burn and inventory costs led to pausing consumer operations to pivot.",
+   "country": "India"
+  },
+  {
+   "name": "Dunzo",
+   "niche": "online grocery",
+   "started": 0,
+   "closed": 2025,
+   "cause": "operations too hard or costly",
+   "line": "Operational challenges and intense competition in the quick-commerce segment.",
+   "country": "India"
+  },
+  {
+   "name": "Thrive",
+   "niche": "food delivery",
+   "started": 2020,
+   "closed": 2024,
+   "cause": "beaten by bigger competitors",
+   "line": "Intense competition from well-funded food-tech giants.",
+   "country": "India"
+  },
+  {
+   "name": "Totsy",
+   "niche": "fashion e-commerce",
+   "started": 2009,
+   "closed": 2013,
+   "cause": "not enough customers wanted it",
+   "line": "Poor Product",
+   "country": "United States"
+  },
+  {
+   "name": "Honest Tea",
+   "niche": "coffee and tea brands",
+   "started": 1998,
+   "closed": 2022,
+   "cause": "beaten by bigger competitors",
+   "line": "Discontinued by its corporate parent after acquisition.",
+   "country": "United States"
+  },
+  {
+   "name": "Freedom Forever",
+   "niche": "solar and clean energy",
+   "started": 2011,
+   "closed": 2026,
+   "cause": "ran out of money",
+   "line": "Filed for Chapter 11 bankruptcy in April 2026 due to financing partner collapses and high borrowing costs.",
+   "country": "United States"
+  },
+  {
+   "name": "Bosque Brewing Company",
+   "niche": "alcohol brands",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Rising costs and fierce retail competition in the craft beer industry.",
+   "country": "United States"
+  },
+  {
+   "name": "Ropero",
+   "niche": "fashion e-commerce",
+   "started": 2005,
+   "closed": 2006,
+   "cause": "not enough customers wanted it",
+   "line": "Bad Market Fit",
+   "country": "Mexico"
+  },
+  {
+   "name": "Brew Dr.",
+   "niche": "coffee and tea brands",
+   "started": 2006,
+   "closed": 2020,
+   "cause": "operations too hard or costly",
+   "line": "High operating costs combined with severe revenue drops during the COVID-19 pandemic forced the closure of their tea shops.",
+   "country": "United States"
+  },
+  {
+   "name": "Ekart",
+   "niche": "parcel and courier delivery",
+   "started": 2016,
+   "closed": 2017,
+   "cause": "not enough customers wanted it",
+   "line": "C2C courier and hyperlocal delivery services failed to grow as expected and were shut down to consolidate service offerings.",
+   "country": "India"
+  },
+  {
+   "name": "Titan Solar Power",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Shut down operations in June 2024 and filed for bankruptcy amidst a residential solar downturn.",
+   "country": "United States"
+  },
+  {
+   "name": "Proterra",
+   "niche": "electric vehicle maker",
+   "started": 0,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Filed for Chapter 11 bankruptcy protection after facing financial instability.",
+   "country": "United States"
+  },
+  {
+   "name": "Altigreen",
+   "niche": "electric vehicle maker",
+   "started": 2017,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Mounting losses and no fresh capital",
+   "country": "India"
+  },
+  {
+   "name": "Harley's Garage",
+   "niche": "car and bike services",
+   "started": 0,
+   "closed": 2024,
+   "cause": "fraud or bad governance",
+   "line": "The business abruptly closed and disappeared with customer cars and money.",
+   "country": "United States"
+  },
+  {
+   "name": "Thrive",
+   "niche": "restaurant software",
+   "started": 2020,
+   "closed": 2024,
+   "cause": "beaten by bigger competitors",
+   "line": "Intense competition from dominant well-funded giants made it difficult to sustain operations.",
+   "country": "India"
+  },
+  {
+   "name": "Munchery",
+   "niche": "healthy meals and diet plans",
+   "started": 0,
+   "closed": 2019,
+   "cause": "operations too hard or costly",
+   "line": "Operational challenges and inability to generate returns on thin margins.",
+   "country": "United States"
+  },
+  {
+   "name": "Fasten",
+   "niche": "ride hailing",
+   "started": 0,
+   "closed": 2018,
+   "cause": "beaten by bigger competitors",
+   "line": "Acquired by Vezet Group and shut down operations.",
+   "country": "United States"
+  },
+  {
+   "name": "Shopee",
+   "niche": "fashion e-commerce",
+   "started": 2021,
+   "closed": 2022,
+   "cause": "beaten by bigger competitors",
+   "line": "Stiff competition from existing market giants and severe regulatory pressures led to closure.",
+   "country": "Singapore"
+  },
+  {
+   "name": "Lord Hobo Bar",
+   "niche": "bars, pubs and breweries",
+   "started": 0,
+   "closed": 2026,
+   "cause": "government rules or legal trouble",
+   "line": "Legal troubles and ownership issues led to the bar closing and going up for sale.",
+   "country": "United States"
+  },
+  {
+   "name": "Unwell Hydration",
+   "niche": "beverage brands",
+   "started": 2025,
+   "closed": 2026,
+   "cause": "not enough customers wanted it",
+   "line": "Celebrity backing and audience size failed to overcome fundamental weaknesses in execution and distribution.",
+   "country": "United States"
+  },
+  {
+   "name": "Pink Energy",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2022,
+   "cause": "government rules or legal trouble",
+   "line": "Shut down entirely amid legal trouble and industry-wide market challenges.",
+   "country": "United States"
+  },
+  {
+   "name": "Ofo",
+   "niche": "vehicle rental",
+   "started": 0,
+   "closed": 2018,
+   "cause": "not enough customers wanted it",
+   "line": "The mentality of Indian users and lack of ecosystem readiness led to misuse and collapse.",
+   "country": "China"
+  },
+  {
+   "name": "Electric Last Mile Solutions",
+   "niche": "electric vehicle maker",
+   "started": 0,
+   "closed": 2022,
+   "cause": "ran out of money",
+   "line": "Ran out of viable financing options and filed for Chapter 7 bankruptcy.",
+   "country": "United States"
+  },
+  {
+   "name": "Headlyt",
+   "niche": "bike taxi",
+   "started": 0,
+   "closed": 2017,
+   "cause": "ran out of money",
+   "line": "Ran out of cash and failed to sustain operations amidst fierce market competition.",
+   "country": "India"
+  },
+  {
+   "name": "Snacc",
+   "niche": "food delivery",
+   "started": 2025,
+   "closed": 2026,
+   "cause": "lost money on every order",
+   "line": "Struggled to make orders profitable",
+   "country": "India"
+  },
+  {
+   "name": "Amazon",
+   "niche": "parcel and courier delivery",
+   "started": 2016,
+   "closed": 2020,
+   "cause": "not enough customers wanted it",
+   "line": "Failed to grow in the way that Amazon had hoped.",
+   "country": "United States"
+  },
+  {
+   "name": "Chhotu.in",
+   "niche": "parcel and courier delivery",
+   "started": 0,
+   "closed": 2014,
+   "cause": "ran out of money",
+   "line": "Faced capital-intensive challenges and shut down in 2014.",
+   "country": "India"
+  },
+  {
+   "name": "A.M. Scott Distillery",
+   "niche": "alcohol brands",
+   "started": 2022,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Faced mounting losses and debts leading to a Chapter 11 bankruptcy filing.",
+   "country": "United States"
+  },
+  {
+   "name": "Trunori",
+   "niche": "nutrition and supplements",
+   "started": 2025,
+   "closed": 2026,
+   "cause": "operations too hard or costly",
+   "line": "We have received confirmation that our fulfillment team was instructed by our manufacturing co-founder to stop fulfilling trunori orders.",
+   "country": "Not reported"
+  },
+  {
+   "name": "Supplement Central",
+   "niche": "nutrition and supplements",
+   "started": 0,
+   "closed": 2018,
+   "cause": "beaten by bigger competitors",
+   "line": "Beaten by the increasing size and market dominance of Amazon and other major online retailers.",
+   "country": "United States"
+  },
+  {
+   "name": "Ibibo",
+   "niche": "ride hailing",
+   "started": 0,
+   "closed": 2019,
+   "cause": "beaten by bigger competitors",
+   "line": "Closed carpooling services amidst competition from Ola and Uber.",
+   "country": "India"
+  },
+  {
+   "name": "Better Place",
+   "niche": "EV charging and battery swapping",
+   "started": 2007,
+   "closed": 2013,
+   "cause": "ran out of money",
+   "line": "Building infrastructure ahead of demand proved extremely capital-intensive and the company failed to scale.",
+   "country": "Israel"
+  },
+  {
+   "name": "TinyOwl",
+   "niche": "food delivery",
+   "started": 0,
+   "closed": 2016,
+   "cause": "operations too hard or costly",
+   "line": "High logistics costs and intense market competition.",
+   "country": "India"
+  },
+  {
+   "name": "Coffee People",
+   "niche": "caf\u00e9 and coffee chain",
+   "started": 0,
+   "closed": 2016,
+   "cause": "beaten by bigger competitors",
+   "line": "Expanded too fast and faced severe capital strains.",
+   "country": "Not reported"
+  },
+  {
+   "name": "Blip",
+   "niche": "fashion e-commerce",
+   "started": 2024,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Bootstrapping with limited working capital and go-to-market challenges.",
+   "country": "India"
+  },
+  {
+   "name": "Supra",
+   "niche": "footwear and sneaker brands",
+   "started": 0,
+   "closed": 2019,
+   "cause": "not enough customers wanted it",
+   "line": "Built brand identity around a single trend and struggled to adapt as it faded.",
+   "country": "United States"
+  },
+  {
+   "name": "SpoonRocket",
+   "niche": "healthy meals and diet plans",
+   "started": 0,
+   "closed": 2017,
+   "cause": "ran out of money",
+   "line": "Failure to fundraise when financial situation declined.",
+   "country": "United States"
+  },
+  {
+   "name": "21st Amendment Brewery",
+   "niche": "bars, pubs and breweries",
+   "started": 2000,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Financial lender withdrew support due to ongoing cash bleed and industry-wide downturn.",
+   "country": "United States"
+  },
+  {
+   "name": "Deliver It",
+   "niche": "parcel and courier delivery",
+   "started": 0,
+   "closed": 2025,
+   "cause": "beaten by bigger competitors",
+   "line": "Struggled to stay competitive against large industry giants.",
+   "country": "United States"
+  },
+  {
+   "name": "Ample",
+   "niche": "EV charging and battery swapping",
+   "started": 2014,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Faced severe supply chain disruptions, macroeconomic headwinds, and liquidity constraints.",
+   "country": "United States"
+  },
+  {
+   "name": "Jokr",
+   "niche": "quick commerce",
+   "started": 2021,
+   "closed": 2023,
+   "cause": "operations too hard or costly",
+   "line": "Order frequency was too low and unit economics failed to reach break-even.",
+   "country": "USA"
+  },
+  {
+   "name": "Satvacart",
+   "niche": "online grocery",
+   "started": 2014,
+   "closed": 2026,
+   "cause": "ran out of money",
+   "line": "Funding and acquisition talks fell through leading to closure.",
+   "country": "India"
+  },
+  {
+   "name": "Ships Coffee Shop",
+   "niche": "caf\u00e9 and coffee chain",
+   "started": 1956,
+   "closed": 1996,
+   "cause": "beaten by bigger competitors",
+   "line": "Overwhelmed by the boom of dedicated dining chains.",
+   "country": "Not reported"
+  },
+  {
+   "name": "Vitality Grooming",
+   "niche": "haircare and men's grooming",
+   "started": 2024,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Shut down before launch because the founder lacked confidence in the product's effectiveness.",
+   "country": "United States"
+  },
+  {
+   "name": "Howard Johnson\u2019s",
+   "niche": "restaurant and fast-food chain",
+   "started": 0,
+   "closed": 2022,
+   "cause": "outside shock",
+   "line": "Severe chain-wide decline culminating in the closure of its final location due to the COVID-19 pandemic.",
+   "country": "United States"
+  },
+  {
+   "name": "Steak and Ale",
+   "niche": "restaurant and fast-food chain",
+   "started": 0,
+   "closed": 2008,
+   "cause": "ran out of money",
+   "line": "Parent company filed for Chapter 7 bankruptcy protection during the Great Recession.",
+   "country": "Not reported"
+  },
+  {
+   "name": "SunPower",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Filing for bankruptcy due to residential solar market volatility and financial strain.",
+   "country": "United States"
+  },
+  {
+   "name": "OLX (Sobek Auto India)",
+   "niche": "used cars and bikes",
+   "started": 0,
+   "closed": 2023,
+   "cause": "outside shock",
+   "line": "Economic challenges leading to closure by the parent company.",
+   "country": "India"
+  },
+  {
+   "name": "Autto.in",
+   "niche": "car and bike services",
+   "started": 2017,
+   "closed": 2017,
+   "cause": "ran out of money",
+   "line": "Heavy spending on customer acquisition and pressure from investors to grow fast led to its shutdown.",
+   "country": "India"
+  },
+  {
+   "name": "Fipola",
+   "niche": "fresh meat, fish and produce",
+   "started": 0,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Failed to raise funds after aggressive offline expansion.",
+   "country": "India"
+  },
+  {
+   "name": "Buyk",
+   "niche": "food delivery",
+   "started": 2021,
+   "closed": 2022,
+   "cause": "ran out of money",
+   "line": "Sanctions over Russia's invasion of Ukraine restricted funding access.",
+   "country": "United States"
+  },
+  {
+   "name": "FirstMile",
+   "niche": "parcel and courier delivery",
+   "started": 0,
+   "closed": 2026,
+   "cause": "ran out of money",
+   "line": "The parent company wound down operations following a troubled merger and investment challenges.",
+   "country": "United States"
+  },
+  {
+   "name": "MyPickup",
+   "niche": "ride hailing",
+   "started": 2022,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Faced capital crunch and struggled to achieve product-market fit.",
+   "country": "India"
+  },
+  {
+   "name": "Kyte",
+   "niche": "vehicle rental",
+   "started": 2019,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Defaulted on loans and had its lender repossess its vehicle fleet.",
+   "country": "United States"
+  },
+  {
+   "name": "Autonomy",
+   "niche": "vehicle rental",
+   "started": 0,
+   "closed": 2024,
+   "cause": "not enough customers wanted it",
+   "line": "Struggled to build up the business and pivoted away.",
+   "country": "United States"
+  },
+  {
+   "name": "Shift Technologies",
+   "niche": "used cars and bikes",
+   "started": 2014,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Deteriorating cash position and inability to obtain further financing.",
+   "country": "United States"
+  },
+  {
+   "name": "Arrival",
+   "niche": "electric vehicle maker",
+   "started": 0,
+   "closed": 2024,
+   "cause": "operations too hard or costly",
+   "line": "Struggled to turn its prototypes into mass-produced vehicles and ran out of money",
+   "country": "United Kingdom"
+  },
+  {
+   "name": "VanMoof",
+   "niche": "car and bike services",
+   "started": 0,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Running out of money and facing a major crisis with customer refunds and repairs.",
+   "country": "Netherlands"
+  },
+  {
+   "name": "Dot",
+   "niche": "bike taxi",
+   "started": 0,
+   "closed": 2017,
+   "cause": "beaten by bigger competitors",
+   "line": "Inability to match competitor subsidies and broader market challenges led to the cessation of operations.",
+   "country": "India"
+  },
+  {
+   "name": "Kitchen United",
+   "niche": "cloud kitchen",
+   "started": 2017,
+   "closed": 2023,
+   "cause": "operations too hard or costly",
+   "line": "Abandoned its physical kitchen network and sold its real estate assets after struggling with unit economics.",
+   "country": "United States"
+  },
+  {
+   "name": "My Pets Wellness",
+   "niche": "pet care",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Abruptly shuttered all ~13 clinics across FL, SC, TN, and TX in mid-April 2025 due to sudden financial crisis",
+   "country": "United States"
+  },
+  {
+   "name": "Sprig",
+   "niche": "healthy meals and diet plans",
+   "started": 2013,
+   "closed": 2017,
+   "cause": "operations too hard or costly",
+   "line": "The complexity and high costs of owning meal production and delivery at scale.",
+   "country": "United States"
+  },
+  {
+   "name": "Bridgeport Bakery",
+   "niche": "bakery and desserts",
+   "started": 1941,
+   "closed": 2021,
+   "cause": "government rules or legal trouble",
+   "line": "Overwhelmed by financial troubles and legal issues after 80 years in business.",
+   "country": "United States"
+  },
+  {
+   "name": "Pandion",
+   "niche": "parcel and courier delivery",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Faced a challenging funding environment and inability to secure capital or buyers.",
+   "country": "United States"
+  },
+  {
+   "name": "Black Button Distilling",
+   "niche": "alcohol brands",
+   "started": 2012,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Overly ambitious facility expansion during a market downturn led to bankruptcy and liquidation.",
+   "country": "United States"
+  },
+  {
+   "name": "Sidecar",
+   "niche": "ride hailing",
+   "started": 2012,
+   "closed": 2015,
+   "cause": "beaten by bigger competitors",
+   "line": "Unable to compete with better-funded rivals like Uber and Lyft.",
+   "country": "United States"
+  },
+  {
+   "name": "Airlift",
+   "niche": "quick commerce",
+   "started": 2019,
+   "closed": 2022,
+   "cause": "ran out of money",
+   "line": "Global recession and capital market downturn made shut-down inevitable.",
+   "country": "Pakistan"
+  },
+  {
+   "name": "Supr Daily",
+   "niche": "milk and daily subscription",
+   "started": 2015,
+   "closed": 2022,
+   "cause": "lost money on every order",
+   "line": "Failed to demonstrate profitability in an increasingly challenging environment.",
+   "country": "India"
+  },
+  {
+   "name": "GoLemon",
+   "niche": "food delivery",
+   "started": 2022,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Fundraising difficulties and tough market economics.",
+   "country": "Nigeria"
+  },
+  {
+   "name": "The Vets",
+   "niche": "pet care",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Faced revenue challenges, tightened funding, and unsustainable burn rates following its merger.",
+   "country": "United States"
+  },
+  {
+   "name": "Pets.com",
+   "niche": "pet care",
+   "started": 1998,
+   "closed": 2000,
+   "cause": "ran out of money",
+   "line": "Dot-com era overexpansion and insufficient funding relative to what was needed to break even",
+   "country": "United States"
+  },
+  {
+   "name": "Freed, Teller & Freed",
+   "niche": "coffee and tea brands",
+   "started": 0,
+   "closed": 2013,
+   "cause": "founder or team problems",
+   "line": "Retirement of the family and lack of business successors.",
+   "country": "United States"
+  },
+  {
+   "name": "GoZoomo",
+   "niche": "used cars and bikes",
+   "started": 0,
+   "closed": 2016,
+   "cause": "lost money on every order",
+   "line": "Unsustainable unit economics.",
+   "country": "India"
+  },
+  {
+   "name": "Byton",
+   "niche": "electric vehicle maker",
+   "started": 0,
+   "closed": 2021,
+   "cause": "ran out of money",
+   "line": "Internal turmoil and burning through funding",
+   "country": "China"
+  },
+  {
+   "name": "Heybob",
+   "niche": "bike taxi",
+   "started": 0,
+   "closed": 2017,
+   "cause": "ran out of money",
+   "line": "Ran out of cash after a late business model pivot and worsening investor sentiments.",
+   "country": "India"
+  },
+  {
+   "name": "Sprig",
+   "niche": "food delivery",
+   "started": 2013,
+   "closed": 2017,
+   "cause": "operations too hard or costly",
+   "line": "The overwhelming complexity of owning meal production through delivery at scale.",
+   "country": "United States"
+  },
+  {
+   "name": "The Ayurveda Co",
+   "niche": "haircare and men's grooming",
+   "started": 0,
+   "closed": 2025,
+   "cause": "operations too hard or costly",
+   "line": "Expanded too fast and wide before the business was ready.",
+   "country": "India"
+  },
+  {
+   "name": "Bru World Caf\u00e9",
+   "niche": "coffee and tea brands",
+   "started": 2011,
+   "closed": 2016,
+   "cause": "beaten by bigger competitors",
+   "line": "High costs, overheads, and intense competition led to the shuttering of the chain.",
+   "country": "India"
+  },
+  {
+   "name": "Rogue Ales & Spirits",
+   "niche": "alcohol brands",
+   "started": 1988,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Suffered from rising costs, slowing traffic, and fierce competition before shutting down.",
+   "country": "United States"
+  },
+  {
+   "name": "Tripda",
+   "niche": "ride hailing",
+   "started": 0,
+   "closed": 2016,
+   "cause": "beaten by bigger competitors",
+   "line": "Faced intense pressure from dominant ride-hailing competitors and shut down.",
+   "country": "Germany"
+  },
+  {
+   "name": "Beepi",
+   "niche": "used cars and bikes",
+   "started": 2013,
+   "closed": 2016,
+   "cause": "ran out of money",
+   "line": "Ran out of cash and mismanaged funds.",
+   "country": "United States"
+  },
+  {
+   "name": "HiPhi",
+   "niche": "electric vehicle maker",
+   "started": 0,
+   "closed": 2024,
+   "cause": "operations too hard or costly",
+   "line": "Funding and operational issues",
+   "country": "China"
+  },
+  {
+   "name": "Buyk",
+   "niche": "quick commerce",
+   "started": 0,
+   "closed": 2022,
+   "cause": "lost money on every order",
+   "line": "Failed due to high labor expenses and unsustainable unit economics.",
+   "country": "United States"
+  },
+  {
+   "name": "Chef\u2019d",
+   "niche": "home food and tiffin",
+   "started": 0,
+   "closed": 2018,
+   "cause": "ran out of money",
+   "line": "Unable to raise additional cash.",
+   "country": "Not reported"
+  },
+  {
+   "name": "Alle",
+   "niche": "fashion e-commerce",
+   "started": 0,
+   "closed": 2025,
+   "cause": "not enough customers wanted it",
+   "line": "Failed to find product-market fit or a sustainable business model despite multiple pivots.",
+   "country": "India"
+  },
+  {
+   "name": "Klydo",
+   "niche": "fashion e-commerce",
+   "started": 2025,
+   "closed": 2025,
+   "cause": "operations too hard or costly",
+   "line": "Struggled with high cash burn, low sell-through rates, and failed fundraising efforts.",
+   "country": "India"
+  },
+  {
+   "name": "Kune",
+   "niche": "healthy meals and diet plans",
+   "started": 2020,
+   "closed": 2022,
+   "cause": "ran out of money",
+   "line": "Ran out of money and suffered from margins crushed by rising food costs.",
+   "country": "Kenya"
+  },
+  {
+   "name": "Horn & Hardart",
+   "niche": "restaurant and fast-food chain",
+   "started": 0,
+   "closed": 1991,
+   "cause": "beaten by bigger competitors",
+   "line": "Beaten by bigger competitors and changing consumer tastes",
+   "country": "United States"
+  },
+  {
+   "name": "Carlsberg India Alwar Brewery",
+   "niche": "bars, pubs and breweries",
+   "started": 2024,
+   "closed": 2026,
+   "cause": "government rules or legal trouble",
+   "line": "Forced shutdown due to severe pollution norm violations and emissions data failures.",
+   "country": "India"
+  },
+  {
+   "name": "Rogue",
+   "niche": "bars, pubs and breweries",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Unmanageable debt and mounting red ink following falling sales.",
+   "country": "United States"
+  },
+  {
+   "name": "Teforia",
+   "niche": "coffee and tea brands",
+   "started": 0,
+   "closed": 2017,
+   "cause": "ran out of money",
+   "line": "It could not raise the funds required and faced a difficult time for hardware companies in the smart kitchen space.",
+   "country": "United States"
+  },
+  {
+   "name": "ADT Solar",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2024,
+   "cause": "operations too hard or costly",
+   "line": "Exited and shut down its residential solar business entirely due to difficult market conditions.",
+   "country": "United States"
+  },
+  {
+   "name": "Blip",
+   "niche": "quick commerce",
+   "started": 0,
+   "closed": 2026,
+   "cause": "ran out of money",
+   "line": "Shut down due to limited working capital and inefficient go-to-market execution.",
+   "country": "India"
+  },
+  {
+   "name": "CloudKitchens",
+   "niche": "cloud kitchen",
+   "started": 2016,
+   "closed": 2022,
+   "cause": "operations too hard or costly",
+   "line": "Struggled with low occupancy, high operating costs, and high restaurant churn.",
+   "country": "USA"
+  },
+  {
+   "name": "Twigly",
+   "niche": "cloud kitchen",
+   "started": 2015,
+   "closed": 2018,
+   "cause": "ran out of money",
+   "line": "Struggled with fundraising and unit economics in a difficult market for small players.",
+   "country": "India"
+  },
+  {
+   "name": "Markafoni",
+   "niche": "fashion e-commerce",
+   "started": 0,
+   "closed": 2017,
+   "cause": "lost money on every order",
+   "line": "The online retailer was not making a profit.",
+   "country": "Turkey"
+  },
+  {
+   "name": "SpoonRocket",
+   "niche": "restaurant and fast-food chain",
+   "started": 0,
+   "closed": 2016,
+   "cause": "ran out of money",
+   "line": "Failed to raise the necessary funding and shut down.",
+   "country": "United States"
+  },
+  {
+   "name": "Juicero",
+   "niche": "beverage brands",
+   "started": 2013,
+   "closed": 2017,
+   "cause": "not enough customers wanted it",
+   "line": "Bad Business Model",
+   "country": "United States"
+  },
+  {
+   "name": "Solyndra",
+   "niche": "solar and clean energy",
+   "started": 2005,
+   "closed": 2011,
+   "cause": "beaten by bigger competitors",
+   "line": "Unable to compete with low-cost conventional solar manufacturers and filed for bankruptcy.",
+   "country": "United States"
+  },
+  {
+   "name": "Vision Solar",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Filed for Chapter 7 bankruptcy and closed down following severe financial distress.",
+   "country": "United States"
+  },
+  {
+   "name": "Vroom",
+   "niche": "used cars and bikes",
+   "started": 0,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Unable to raise enough capital to keep operations going after failing to compete with Carvana.",
+   "country": "United States"
+  },
+  {
+   "name": "BluSmart Mobility",
+   "niche": "electric vehicle maker",
+   "started": 2019,
+   "closed": 2025,
+   "cause": "fraud or bad governance",
+   "line": "Governance failures and insolvency",
+   "country": "India"
+  },
+  {
+   "name": "Homejoy",
+   "niche": "home services",
+   "started": 2012,
+   "closed": 2015,
+   "cause": "government rules or legal trouble",
+   "line": "Worker-classification lawsuits made fundraising difficult and led to closure.",
+   "country": "United States"
+  },
+  {
+   "name": "TuWheelz",
+   "niche": "bike taxi",
+   "started": 0,
+   "closed": 2017,
+   "cause": "beaten by bigger competitors",
+   "line": "Could not survive the intense competition and funding disparities against major aggregators.",
+   "country": "India"
+  },
+  {
+   "name": "Dunzo",
+   "niche": "quick commerce",
+   "started": 2017,
+   "closed": 2025,
+   "cause": "beaten by bigger competitors",
+   "line": "Strategic misstep of shifting to quick-commerce operations alongside severe mismanagement and fierce competition.",
+   "country": "India"
+  },
+  {
+   "name": "Otipy",
+   "niche": "milk and daily subscription",
+   "started": 2020,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Otipy, a once-promising community group buying startup connecting consumers to fresh farm produce and daily essentials, has abruptly ceased ",
+   "country": "India"
+  },
+  {
+   "name": "Sorabel",
+   "niche": "fashion e-commerce",
+   "started": 0,
+   "closed": 2020,
+   "cause": "outside shock",
+   "line": "The Covid-19 pandemic wiped out its cash.",
+   "country": "Indonesia"
+  },
+  {
+   "name": "Sendle",
+   "niche": "parcel and courier delivery",
+   "started": 2014,
+   "closed": 2026,
+   "cause": "ran out of money",
+   "line": "Collapsing merger and frozen funding led to an abrupt shutdown of operations.",
+   "country": "Australia"
+  },
+  {
+   "name": "Sani",
+   "niche": "ethnic wear",
+   "started": 0,
+   "closed": 2025,
+   "cause": "outside shock",
+   "line": "Market shifts and changing demand.",
+   "country": "United States"
+  },
+  {
+   "name": "Luca Mariano Distillery",
+   "niche": "alcohol brands",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Filed for bankruptcy amid industry-wide financial distress for U.S. spirit makers.",
+   "country": "United States"
+  },
+  {
+   "name": "RideAustin",
+   "niche": "ride hailing",
+   "started": 0,
+   "closed": 2020,
+   "cause": "outside shock",
+   "line": "Impacted by coronavirus safety concerns and operational struggles.",
+   "country": "United States"
+  },
+  {
+   "name": "Ola Cars",
+   "niche": "used cars and bikes",
+   "started": 0,
+   "closed": 2022,
+   "cause": "beaten by bigger competitors",
+   "line": "Shut down the used car business in just 8 months to focus on electric vehicles.",
+   "country": "India"
+  },
+  {
+   "name": "Gopuff",
+   "niche": "quick commerce",
+   "started": 0,
+   "closed": 2022,
+   "cause": "lost money on every order",
+   "line": "Shut down due to unsustainable unit economics and high labor costs.",
+   "country": "United States"
+  },
+  {
+   "name": "Kune Food",
+   "niche": "cloud kitchen",
+   "started": 2020,
+   "closed": 2022,
+   "cause": "ran out of money",
+   "line": "Failed to raise funds and suffered from deteriorating margins due to rising food costs.",
+   "country": "Kenya"
+  },
+  {
+   "name": "Josephine",
+   "niche": "home food and tiffin",
+   "started": 2015,
+   "closed": 2018,
+   "cause": "ran out of money",
+   "line": "Ran out of resources to drive required legislative and business changes.",
+   "country": "United States"
+  },
+  {
+   "name": "Fika",
+   "niche": "caf\u00e9 and coffee chain",
+   "started": 0,
+   "closed": 2019,
+   "cause": "ran out of money",
+   "line": "Closed all locations following a bankruptcy filing.",
+   "country": "United States"
+  },
+  {
+   "name": "Goodlife",
+   "niche": "fashion e-commerce",
+   "started": 0,
+   "closed": 2013,
+   "cause": "beaten by bigger competitors",
+   "line": "Faced intense competition from bigger e-commerce players entering the same vertical.",
+   "country": "India"
+  },
+  {
+   "name": "Crumbs Bake Shop",
+   "niche": "bakery and desserts",
+   "started": 0,
+   "closed": 2014,
+   "cause": "ran out of money",
+   "line": "Failed to meet financial benchmarks and stock market requirements amid a fading cupcake craze.",
+   "country": "United States"
+  },
+  {
+   "name": "Erus Energy",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Declared bankruptcy due to higher interest rates and tightening financial conditions.",
+   "country": "United States"
+  },
+  {
+   "name": "Getaround",
+   "niche": "vehicle rental",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "High operational costs and financial difficulties led to the shutdown of U.S. operations.",
+   "country": "United States"
+  },
+  {
+   "name": "Nikola",
+   "niche": "electric vehicle maker",
+   "started": 0,
+   "closed": 2025,
+   "cause": "fraud or bad governance",
+   "line": "Filed for Chapter 11 bankruptcy protection after grappling with tepid demand and macroeconomic factors.",
+   "country": "United States"
+  },
+  {
+   "name": "Byju's",
+   "niche": "test prep",
+   "started": 2011,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Over-reliance on unsustainable growth models, financial mismanagement, and debt issues led to its collapse.",
+   "country": "India"
+  },
+  {
+   "name": "Obhai",
+   "niche": "bike taxi",
+   "started": 0,
+   "closed": 2021,
+   "cause": "not enough customers wanted it",
+   "line": "Shut down its bike-sharing service after a sharp drop in platform user numbers.",
+   "country": "Bangladesh"
+  },
+  {
+   "name": "Fridge No More",
+   "niche": "quick commerce",
+   "started": 0,
+   "closed": 2022,
+   "cause": "lost money on every order",
+   "line": "Collapsed under high labor costs and unsustainable unit economics.",
+   "country": "United States"
+  },
+  {
+   "name": "Mosaic",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Faced high interest rates, demand volatility, and financing partner collapses leading to bankruptcy.",
+   "country": "United States"
+  },
+  {
+   "name": "Suntuity Renewables",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2023,
+   "cause": "ran out of money",
+   "line": "Succumbed to industry-wide financial challenges and went out of business.",
+   "country": "United States"
+  },
+  {
+   "name": "Fisker",
+   "niche": "electric vehicle maker",
+   "started": 2016,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Filed for Chapter 11 bankruptcy amid cash burn and lack of consumer demand.",
+   "country": "United States"
+  },
+  {
+   "name": "Builder.ai",
+   "niche": "AI apps and tools",
+   "started": 2016,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Ran out of money and filed for bankruptcy after revenue inflation and heavy reliance on human labor were exposed.",
+   "country": "UK"
+  },
+  {
+   "name": "Rideji",
+   "niche": "bike taxi",
+   "started": 0,
+   "closed": 2017,
+   "cause": "beaten by bigger competitors",
+   "line": "Succumbed to heavy competition and lack of sustainable funding in the early bike taxi market.",
+   "country": "India"
+  },
+  {
+   "name": "Satvacart",
+   "niche": "milk and daily subscription",
+   "started": 2014,
+   "closed": 2025,
+   "cause": "beaten by bigger competitors",
+   "line": "Gurugram-based e-grocery startup Satvacart has shut down after 12 years of operations.",
+   "country": "India"
+  },
+  {
+   "name": "Industrie Africa",
+   "niche": "fashion e-commerce",
+   "started": 2018,
+   "closed": 2024,
+   "cause": "government rules or legal trouble",
+   "line": "US tariffs and the end of the de minimis loophole heavily impacted the business.",
+   "country": "Tanzania"
+  },
+  {
+   "name": "Pedal and Post",
+   "niche": "parcel and courier delivery",
+   "started": 2012,
+   "closed": 2026,
+   "cause": "beaten by bigger competitors",
+   "line": "Loss of its major client and primary contract forced the company into liquidation.",
+   "country": "United Kingdom"
+  },
+  {
+   "name": "Boston Harbor Distillery",
+   "niche": "alcohol brands",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Filed for bankruptcy during a wave of financial distress across U.S. spirits producers.",
+   "country": "United States"
+  },
+  {
+   "name": "Care/of",
+   "niche": "nutrition and supplements",
+   "started": 2016,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Funding loss and parent company's decision to cease investment.",
+   "country": "United States"
+  },
+  {
+   "name": "Meru Cabs",
+   "niche": "ride hailing",
+   "started": 0,
+   "closed": 2019,
+   "cause": "beaten by bigger competitors",
+   "line": "Shuttered carpooling service as Ola and Uber surged.",
+   "country": "India"
+  },
+  {
+   "name": "Canoo",
+   "niche": "electric vehicle maker",
+   "started": 2017,
+   "closed": 2024,
+   "cause": "ran out of money",
+   "line": "Filed for Chapter 7 bankruptcy after struggling to sustain operations following its public debut.",
+   "country": "United States"
+  },
+  {
+   "name": "Taskbob",
+   "niche": "home services",
+   "started": 2014,
+   "closed": 2017,
+   "cause": "not enough customers wanted it",
+   "line": "Struggled to achieve scale and profitability.",
+   "country": "India"
+  },
+  {
+   "name": "Foxtrot",
+   "niche": "caf\u00e9 and coffee chain",
+   "started": 2015,
+   "closed": 2024,
+   "cause": "operations too hard or costly",
+   "line": "Unsustainable business model leading to an abrupt shutdown.",
+   "country": "Not reported"
+  },
+  {
+   "name": "Freshly",
+   "niche": "healthy meals and diet plans",
+   "started": 2015,
+   "closed": 2023,
+   "cause": "not enough customers wanted it",
+   "line": "Drop in pandemic-related demand and poor customer retention making the D2C channel too narrow.",
+   "country": "United States"
+  },
+  {
+   "name": "Elysian Brewing Company",
+   "niche": "bars, pubs and breweries",
+   "started": 1996,
+   "closed": 2024,
+   "cause": "operations too hard or costly",
+   "line": "Shut down its Georgetown production brewery operations following unionization votes and negotiations.",
+   "country": "United States"
+  },
+  {
+   "name": "Weissner Brewery",
+   "niche": "bars, pubs and breweries",
+   "started": 0,
+   "closed": 1920,
+   "cause": "government rules or legal trouble",
+   "line": "Prohibition took its toll and forced it to close.",
+   "country": "United States"
+  },
+  {
+   "name": "Marigold Coffee",
+   "niche": "coffee and tea brands",
+   "started": 2009,
+   "closed": 2020,
+   "cause": "operations too hard or costly",
+   "line": "Razor-thin margins and pandemic uncertainty.",
+   "country": "United States"
+  },
+  {
+   "name": "Sunnova",
+   "niche": "solar and clean energy",
+   "started": 0,
+   "closed": 2025,
+   "cause": "ran out of money",
+   "line": "Higher borrowing costs and challenging financing conditions forced the company into Chapter 11 bankruptcy.",
+   "country": "United States"
+  },
+  {
+   "name": "Stoli Vodka",
+   "niche": "alcohol brands",
+   "started": 0,
+   "closed": 2025,
+   "cause": "government rules or legal trouble",
+   "line": "Shut down after facing public trouble and declining consumer demand.",
+   "country": "United States"
+  },
+  {
+   "name": "RentOnGo",
+   "niche": "vehicle rental",
+   "started": 2012,
+   "closed": 2019,
+   "cause": "ran out of money",
+   "line": "A failed M&A deal with Bounce forced the company to shut shop.",
+   "country": "India"
+  }
+ ],
+ "museum": {
+  "count": 328,
+  "unknown": 142,
+  "exhibits": [
+   {
+    "cause": "ran out of money",
+    "n": 74,
+    "names": [
+     {
+      "name": "Byju's",
+      "started": 2011,
+      "closed": 2024,
+      "niche": "test prep"
+     },
+     {
+      "name": "Fisker",
+      "started": 2016,
+      "closed": 2024,
+      "niche": "electric vehicle maker"
+     },
+     {
+      "name": "Pets.com",
+      "started": 1998,
+      "closed": 2000,
+      "niche": "pet care"
+     }
+    ]
+   },
+   {
+    "cause": "beaten by bigger competitors",
+    "n": 35,
+    "names": [
+     {
+      "name": "Solyndra",
+      "started": 2005,
+      "closed": 2011,
+      "niche": "solar and clean energy"
+     },
+     {
+      "name": "Dunzo",
+      "started": 2017,
+      "closed": 2025,
+      "niche": "quick commerce"
+     },
+     {
+      "name": "Thrive",
+      "started": 2020,
+      "closed": 2024,
+      "niche": "food delivery"
+     }
+    ]
+   },
+   {
+    "cause": "operations too hard or costly",
+    "n": 25,
+    "names": [
+     {
+      "name": "Sprig",
+      "started": 2013,
+      "closed": 2017,
+      "niche": "healthy meals and diet plans"
+     },
+     {
+      "name": "TinyOwl",
+      "started": 0,
+      "closed": 2016,
+      "niche": "food delivery"
+     },
+     {
+      "name": "Jokr",
+      "started": 2021,
+      "closed": 2023,
+      "niche": "quick commerce"
+     }
+    ]
+   },
+   {
+    "cause": "not enough customers wanted it",
+    "n": 17,
+    "names": [
+     {
+      "name": "Juicero",
+      "started": 2013,
+      "closed": 2017,
+      "niche": "beverage brands"
+     },
+     {
+      "name": "Unwell Hydration",
+      "started": 2025,
+      "closed": 2026,
+      "niche": "beverage brands"
+     },
+     {
+      "name": "Alle",
+      "started": 0,
+      "closed": 2025,
+      "niche": "fashion e-commerce"
+     }
+    ]
+   }
+  ]
+ }
+}

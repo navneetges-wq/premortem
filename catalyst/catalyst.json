@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "targets": [
+      "api",
+      "researcher"
+    ],
+    "ignore": [],
+    "source": "functions"
+  },
+  "client": {
+    "source": "client"
+  }
+}

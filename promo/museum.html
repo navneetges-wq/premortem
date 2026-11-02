@@ -1,0 +1,199 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;background:#000;overflow:hidden}
+  #stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:Manrope}
+  #gl{position:absolute;inset:0;width:1920px;height:1080px}
+  #ui{position:absolute;inset:0;pointer-events:none}
+  .cap{position:absolute;left:90px;bottom:84px;color:#F4F1EA;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+  .cap small{display:block;font:600 22px 'JetBrains Mono';letter-spacing:.2em;color:#ff9a76;margin-bottom:12px}
+  .cap b{font:700 46px/1.15 Manrope;letter-spacing:-.02em}
+  .bars{position:absolute;left:0;right:0;height:70px;background:#000}
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js" } }</script>
+</head><body><div id="stage"><canvas id="gl" width="1920" height="1080"></canvas><div id="ui"></div></div>
+<script type="module">
+// MUSEUM — "Hall of Shut-Downs": one continuous camera glide through a gallery of real causes of death.
+import * as THREE from "three";
+window.W = 1920; window.H = 1080; window.DURATION = 33; window.BPM = 60; window.MOOD = "museum";
+const DATA = await (await fetch("data.json")).json();
+const M = DATA.museum, EX = M.exhibits;
+await Promise.all(["800 80px Manrope", "700 40px Manrope", "500 30px Manrope", "600 24px 'JetBrains Mono'"].map((f) => document.fonts.load(f)));
+
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const P = (t, a, d) => clamp((t - a) / d);
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+const years = (c) => (c.started && c.closed ? `${c.started}–${c.closed}` : c.closed ? `closed ${c.closed}` : "");
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("gl"), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(1920, 1080, false);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#0b0a0a");
+scene.fog = new THREE.Fog("#0b0a0a", 18, 60);
+const camera = new THREE.PerspectiveCamera(42, 1920 / 1080, 0.05, 200);
+
+// ---------- the building ----------
+const WALL = new THREE.MeshStandardMaterial({ color: "#ece6da", roughness: 0.92 });
+const FLOOR = new THREE.MeshStandardMaterial({ color: "#2a2725", roughness: 0.28, metalness: 0.15 });
+const CEIL = new THREE.MeshStandardMaterial({ color: "#1b1918", roughness: 1 });
+const LEN = 56, HALF = 4, HGT = 5.2;
+const box = (w, h, d, mat, x, y, z, shadow = true) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.receiveShadow = shadow; scene.add(m); return m; };
+box(HALF * 2, 0.1, LEN + 10, FLOOR, 0, -0.05, -LEN / 2 + 4);
+box(HALF * 2, 0.1, LEN + 10, CEIL, 0, HGT, -LEN / 2 + 4, false);
+box(0.1, HGT, LEN + 10, WALL, -HALF, HGT / 2, -LEN / 2 + 4);
+box(0.1, HGT, LEN + 10, WALL, HALF, HGT / 2, -LEN / 2 + 4);
+box(HALF * 2, HGT, 0.1, WALL, 0, HGT / 2, -LEN);                       // the far wall
+// skirting lines for depth
+const SK = new THREE.MeshStandardMaterial({ color: "#c9c1b3", roughness: 0.8 });
+box(0.12, 0.14, LEN + 10, SK, -HALF + 0.06, 0.07, -LEN / 2 + 4); box(0.12, 0.14, LEN + 10, SK, HALF - 0.06, 0.07, -LEN / 2 + 4);
+scene.add(new THREE.HemisphereLight("#fff3e6", "#2a2420", 0.35));
+
+// ---------- text on walls (canvas textures) ----------
+function textPlane(w, h, draw, res = 1600) {
+  const c = document.createElement("canvas"); c.width = res; c.height = Math.round(res * (h / w)); const x = c.getContext("2d");
+  draw(x, c.width, c.height);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: t, transparent: true, roughness: 0.9 }));
+  return m;
+}
+// entrance title on the left wall
+const title = textPlane(5.2, 2.6, (x, w, h) => {
+  x.fillStyle = "#161616"; x.font = "600 46px 'JetBrains Mono'"; x.fillText("P R E M O R T E M   P R E S E N T S", 0, 80);
+  x.font = "800 190px Manrope"; x.fillText("Hall of", 0, 300); x.fillText("Shut-Downs", 0, 480);
+  x.fillStyle = "#E4502F"; x.font = "700 64px Manrope"; x.fillText(`${M.count} businesses. All real.`, 4, 640);
+  x.fillStyle = "#6b6a66"; x.font = "500 44px Manrope"; x.fillText("Each one linked to the news that reported it.", 4, 730);
+});
+title.position.set(-HALF + 0.06, 2.3, -3.2); title.rotation.y = Math.PI / 2; scene.add(title);
+
+// ---------- exhibits ----------
+const ACC = new THREE.MeshStandardMaterial({ color: "#E4502F", roughness: 0.35, metalness: 0.1 });
+const CER = new THREE.MeshStandardMaterial({ color: "#f3efe8", roughness: 0.35 });
+const PLINTH = new THREE.MeshStandardMaterial({ color: "#f6f2ea", roughness: 0.7 });
+function sculpture(i) {
+  const g = new THREE.Group();
+  if (i === 0) {          // ran out of money: a coin tower, the top coin falling off in orange
+    for (let k = 0; k < 9; k++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.07, 48), CER); c.position.set(Math.sin(k * 1.7) * 0.03, 0.04 + k * 0.075, Math.cos(k * 1.3) * 0.03); c.castShadow = true; g.add(c); }
+    const last = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.07, 48), ACC); last.position.set(0.42, 0.9, 0.05); last.rotation.z = -0.9; last.castShadow = true; g.add(last);
+  } else if (i === 1) {   // beaten by bigger competitors: a tiny pawn beside a giant king
+    const prof = (pts) => new THREE.LatheGeometry(pts.map(([a, b]) => new THREE.Vector2(a, b)), 48);
+    const king = new THREE.Mesh(prof([[0, 0], [0.36, 0], [0.36, 0.08], [0.24, 0.16], [0.18, 0.9], [0.3, 1.0], [0.3, 1.06], [0.16, 1.12], [0.22, 1.3], [0, 1.36]]), CER); king.castShadow = true; g.add(king);
+    const cross = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.24, 0.06), CER); cross.position.y = 1.46; g.add(cross);
+    const pawn = new THREE.Mesh(prof([[0, 0], [0.14, 0], [0.14, 0.04], [0.08, 0.1], [0.06, 0.24], [0.1, 0.27], [0, 0.27]]), ACC); pawn.position.set(0.5, 0, 0.12); pawn.castShadow = true; g.add(pawn);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.08, 32, 16), ACC); head.position.set(0.5, 0.33, 0.12); g.add(head);
+  } else if (i === 2) {   // operations too hard or costly: a knot that can't be untied
+    const k = new THREE.Mesh(new THREE.TorusKnotGeometry(0.34, 0.07, 220, 24, 3, 5), CER); k.position.y = 0.62; k.castShadow = true; g.add(k);
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.09, 32, 16), ACC); s.position.set(0.3, 0.9, 0.2); g.add(s);
+  } else {                // not enough customers wanted it: one empty chair facing an empty stage
+    const leg = (x, z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.42, 0.05), CER); m.position.set(x, 0.21, z); m.castShadow = true; g.add(m); };
+    leg(-0.2, -0.2); leg(0.2, -0.2); leg(-0.2, 0.2); leg(0.2, 0.2);
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.05, 0.48), ACC); seat.position.y = 0.44; seat.castShadow = true; g.add(seat);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.5, 0.05), CER); back.position.set(0, 0.7, -0.22); back.castShadow = true; g.add(back);
+  }
+  return g;
+}
+const exhibits = EX.map((e, i) => {
+  const s = i % 2 ? 1 : -1, z = -9 - i * 9.5, x = s * 2.15;
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.0, 1.2), PLINTH); plinth.position.set(x, 0.5, z); plinth.castShadow = plinth.receiveShadow = true; scene.add(plinth);
+  const sc = sculpture(i); sc.position.set(x, 1.0, z); scene.add(sc);
+  // wall plaque
+  const plaque = textPlane(1.5, 1.05, (c, w, h) => {
+    c.fillStyle = "#faf7f1"; c.fillRect(0, 0, w, h);
+    c.fillStyle = "#BF3F1C"; c.font = "600 42px 'JetBrains Mono'"; c.fillText(`EXHIBIT ${String(i + 1).padStart(2, "0")}`, 70, 110);
+    c.fillStyle = "#161616"; c.font = "800 104px Manrope";
+    const words = cap(e.cause).split(" "), lines = [""];
+    for (const wd of words) { const tt = (lines[lines.length - 1] + " " + wd).trim(); if (c.measureText(tt).width > w - 140 && lines[lines.length - 1]) lines.push(wd); else lines[lines.length - 1] = tt; }
+    lines.forEach((l, k) => c.fillText(l, 70, 240 + k * 112));
+    let y = 240 + lines.length * 112 + 30;
+    c.fillStyle = "#E4502F"; c.font = "800 76px Manrope"; c.fillText(`${e.n} businesses`, 70, y); y += 100;
+    c.fillStyle = "#2b2a28"; c.font = "600 60px Manrope";
+    e.names.forEach((n) => { c.fillText(n.name, 70, y); c.fillStyle = "#8a857c"; c.font = "500 44px 'JetBrains Mono'"; c.fillText(years(n), 70 + 640, y); c.fillStyle = "#2b2a28"; c.font = "600 60px Manrope"; y += 80; });
+    c.fillStyle = "#8a857c"; c.font = "500 32px 'JetBrains Mono'"; c.fillText("Every company linked to its news sources.", 70, h - 55);
+  }, 1500);
+  plaque.position.set(s * (HALF - 0.06), 1.75, z - 1.5); plaque.rotation.y = -s * Math.PI / 2; scene.add(plaque);
+  // spotlight from the ceiling
+  const spot = new THREE.SpotLight("#ffe7cc", 0, 9, 0.42, 0.55, 1.2);
+  spot.position.set(x * 0.55, HGT - 0.1, z + 1.2); spot.target.position.set(x, 1.2, z); spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -0.0005;
+  scene.add(spot); scene.add(spot.target);
+  const wash = new THREE.SpotLight("#fff1e2", 0, 7, 0.55, 0.8, 1.4);
+  wash.position.set(s * 1.2, HGT - 0.1, z - 1.5); wash.target.position.set(s * HALF, 1.7, z - 1.5); scene.add(wash); scene.add(wash.target);
+  return { e, s, x, z, sc, spot, wash };
+});
+
+// ---------- the last room: an empty plinth ----------
+const endZ = -LEN + 4.5;
+const ePl = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.0, 1.2), PLINTH); ePl.position.set(0, 0.5, endZ); ePl.castShadow = ePl.receiveShadow = true; scene.add(ePl);
+const endSpot = new THREE.SpotLight("#ffe7cc", 0, 10, 0.35, 0.5, 1.2); endSpot.position.set(0, HGT - 0.1, endZ + 1.5); endSpot.target.position.set(0, 1, endZ); endSpot.castShadow = true; endSpot.shadow.mapSize.set(1024, 1024); scene.add(endSpot); scene.add(endSpot.target);
+const wallText = (draw) => { const p = textPlane(5.6, 1.8, draw); p.position.set(0, 3.25, -LEN + 0.07); p.material.opacity = 0; scene.add(p); return p; };
+const yourIdea = wallText((x, w, h) => { x.textAlign = "center"; x.fillStyle = "#161616"; x.font = "800 150px Manrope"; x.fillText("Your idea isn’t in here.", w / 2, 230); });
+const yet = wallText((x, w, h) => { x.textAlign = "center"; x.fillStyle = "#E4502F"; x.font = "800 190px Manrope"; x.fillText("Yet.", w / 2, 470); });
+const endWash = new THREE.SpotLight("#fff1e2", 0, 12, 0.7, 0.8, 1.2); endWash.position.set(0, HGT - 0.2, -LEN + 6); endWash.target.position.set(0, 3, -LEN); scene.add(endWash); scene.add(endWash.target);
+
+// ---------- camera path: one continuous glide ----------
+const ROOM = 5.0, T0 = 4.4;                         // seconds per room; when room 1 starts
+const K = [[0, [2.7, 1.8, -2.2], [-HALF, 2.3, -3.3]], [1.9, [2.5, 1.75, -2.4], [-HALF, 2.3, -3.4]], [3.3, [0.4, 1.65, -3.2], [0, 1.5, -12]]];
+exhibits.forEach((ex, i) => {
+  const t0 = T0 + i * ROOM;
+  K.push([t0, [-ex.s * 0.9, 1.6, ex.z + 3.4], [ex.x, 1.45, ex.z]]);            // see the sculpture
+  K.push([t0 + 1.5, [-ex.s * 0.2, 1.6, ex.z + 0.9], [ex.x * 0.95, 1.5, ex.z - 0.6]]);
+  K.push([t0 + 2.7, [ex.s * 1.35, 1.72, ex.z - 1.5], [ex.s * HALF, 1.75, ex.z - 1.5]]);   // face the plaque
+  K.push([t0 + 3.9, [ex.s * 1.55, 1.72, ex.z - 1.5], [ex.s * HALF, 1.75, ex.z - 1.5]]);   // read it
+});
+K.push([T0 + 4 * ROOM + 0.4, [0, 1.62, endZ + 9], [0, 1.6, endZ]]);
+K.push([T0 + 4 * ROOM + 3.4, [0, 1.55, endZ + 4.8], [0, 1.9, -LEN]]);
+K.push([DURATION, [0, 1.6, endZ + 4.2], [0, 2.2, -LEN]]);
+const posCurve = new THREE.CatmullRomCurve3(K.map((k) => new THREE.Vector3(...k[1])), false, "centripetal");
+const lookCurve = new THREE.CatmullRomCurve3(K.map((k) => new THREE.Vector3(...k[2])), false, "centripetal");
+const uOf = (t) => { for (let i = 0; i < K.length - 1; i++) if (t <= K[i + 1][0]) { const f = (t - K[i][0]) / (K[i + 1][0] - K[i][0]); return (i + f * f * (3 - 2 * f)) / (K.length - 1); } return 1; };
+
+// ---------- caption (audio-guide style) ----------
+const ui = document.getElementById("ui");
+function caption(t) {
+  let html = `<div class="bars" style="top:0"></div><div class="bars" style="bottom:0"></div>`;
+  const items = [[0.4, 3.2, "WELCOME", "Take a slow walk through<br>what killed them."]];
+  exhibits.forEach((ex, i) => items.push([T0 + i * ROOM + 0.3, T0 + i * ROOM + 2.6, `ROOM ${i + 1}`, `The #${i + 1} reported cause of death.`]));
+  items.push([25.0, 27.4, "THE LAST ROOM", `${M.unknown} more never said why.`]);
+  for (const [a, b, small, big] of items) {
+    const o = Math.min(P(t, a, 0.5), 1 - P(t, b - 0.5, 0.5));
+    if (o > 0) html += `<div class="cap" style="opacity:${o}"><small>${small}</small><b>${big}</b></div>`;
+  }
+  // final logo card
+  const L = P(t, 29.8, 0.9);
+  if (L > 0) html += `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:150px;opacity:${L}">
+    <div style="font:500 92px Manrope;letter-spacing:-.035em;color:#F4F1EA"><b style="font-weight:800">pre</b>mortem</div>
+    <div style="margin-top:14px;font:600 36px Manrope;color:rgba(244,241,234,.75)">Run a premortem — <span style="color:#ff8a5e">before you build.</span></div></div>`;
+  ui.innerHTML = html;
+}
+
+// ---------- render one moment ----------
+const v = new THREE.Vector3(), lk = new THREE.Vector3();
+window.renderAt = (t) => {
+  const u = uOf(t);
+  posCurve.getPoint(u, v); lookCurve.getPoint(u, lk);
+  v.y += Math.sin(t * 2.6) * 0.012;                       // a gentle walking bob
+  camera.position.copy(v); camera.lookAt(lk);
+  exhibits.forEach((ex, i) => {
+    const on = P(t, T0 + i * ROOM - 1.2, 0.35);            // lights switch on as you approach
+    ex.spot.intensity = on * 34; ex.wash.intensity = on * 10;
+    ex.spot.castShadow = Math.abs(camera.position.z - ex.z) < 14;
+    ex.sc.rotation.y = t * 0.25 + i;
+  });
+  endSpot.intensity = P(t, 23.4, 0.35) * 36; endWash.intensity = P(t, 25.2, 1.5) * 16 * (1 - P(t, 29.2, 0.8) * 0.85);
+  yourIdea.material.opacity = P(t, 25.6, 0.9); yet.material.opacity = P(t, 27.5, 0.35);
+  scene.fog.far = 60 - P(t, 29.2, 1.2) * 52;               // the hall fades to dark for the logo
+  renderer.render(scene, camera);
+  caption(t);
+};
+
+// ---------- sound cues ----------
+const CUES = [];
+for (let t = 3.3; t < 28.0; t += 0.62) { const reading = exhibits.some((ex, i) => t > T0 + i * ROOM + 2.8 && t < T0 + i * ROOM + 4.0); if (!reading) CUES.push({ t, s: "step" }); }
+exhibits.forEach((ex, i) => { CUES.push({ t: T0 + i * ROOM - 1.2, s: "clunk" }); CUES.push({ t: T0 + i * ROOM + 0.4, s: "bell", f: [523.25, 440, 392, 349.23][i] }); });
+CUES.push({ t: 23.4, s: "clunk" }); CUES.push({ t: 25.6, s: "bell", f: 261.63 }); CUES.push({ t: 27.5, s: "impact", shake: 0 }); CUES.push({ t: 29.8, s: "chime" });
+window.CUES = CUES;
+renderAt(0);
+window.READY = true;
+</script></body></html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>premortem — see how ideas like yours failed, before you build</title>
+  <meta name="description" content="premortem shows founders which companies already tried their idea, how the ones that shut down failed, a risk score and the warning signs to watch for. Free, sourced, nothing made up.">
+  <meta property="og:title" content="premortem — before you build it, see who already tried">
+  <meta property="og:description" content="The companies that tried your idea, how they died, your risk score and red flags. Every fact linked to its source.">
+  <meta property="og:image" content="https://whotriedit-60093906253.development.catalystserverless.in/app/assets/share-card.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F4F1EA">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=43">
+  <link rel="stylesheet" href="landing.css?v=56">
+</head>
+<body id="top" class="landing">
+  <div class="l-progress" aria-hidden="true"><span></span></div>
+  <div class="shell">
+    <nav class="nav">
+      <a href="#top" class="wordmark" aria-label="premortem"><img src="assets/logo-header.png" alt="premortem" width="194" height="30"></a>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#examples">Examples</a>
+        <a href="#faq">FAQ</a>
+        <a href="index.html" class="nav-cta">Try premortem</a>
+      </div>
+    </nav>
+
+    <!-- 1. Hero -->
+    <section class="card l-hero">
+      <div class="l-hero-copy">
+        <span class="pill">✦ Startup pre-mortem engine</span>
+        <h1>Most startups die the same few ways. <span class="accent">See yours before you build.</span></h1>
+        <p class="lead">Type your idea. See who tried it, how they died, and your odds.</p>
+        <div class="l-cta-row">
+          <a class="btn btn-signal" href="index.html">Run a free premortem →</a>
+          <a class="btn btn-ghost" href="#examples">See an example</a>
+        </div>
+        <p class="l-proof"><span class="dot"></span>Every company linked to its source</p>
+      </div>
+
+      <!-- glass preview of a real report (filled with live data) -->
+      <div class="l-preview" aria-label="Example of a premortem report">
+        <div class="lp-card lp-main loading">
+          <span class="eyebrow-dark">Sample premortem · live data</span>
+          <div class="lp-top">
+            <svg class="lp-ring" viewBox="0 0 88 88" aria-hidden="true">
+              <defs><linearGradient id="lpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2994A"/><stop offset="1" stop-color="#E4502F"/></linearGradient></defs>
+              <circle cx="44" cy="44" r="38" class="lp-track"/>
+              <circle cx="44" cy="44" r="38" class="lp-fill" id="lp-fill" stroke-dasharray="238.8" stroke-dashoffset="238.8"/>
+            </svg>
+            <div class="lp-num"><b id="lp-score">–</b><span>/100</span></div>
+            <div>
+              <strong id="lp-title">“Food delivery app”</strong>
+              <p id="lp-line"><span class="lp-skel" style="width:78%"></span></p>
+            </div>
+          </div>
+          <div class="lp-causes" id="lp-causes"><div class="lp-skel-row"><span class="lp-skel" style="width:55%"></span><span class="lp-skel bar"></span></div><div class="lp-skel-row"><span class="lp-skel" style="width:70%"></span><span class="lp-skel bar"></span></div><div class="lp-skel-row"><span class="lp-skel" style="width:48%"></span><span class="lp-skel bar"></span></div></div>
+        </div>
+        <div class="lp-floats">
+          <div class="lp-card lp-float dead" id="lp-dead"></div>
+          <div class="lp-card lp-float alive" id="lp-alive"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- live ticker: real businesses that shut down (from our graveyard) -->
+    <div class="l-ticker" aria-label="Real businesses that shut down"><div class="l-ticker-track" id="l-ticker"></div></div>
+
+    <!-- 2. The problem -->
+    <section class="card">
+      <span class="pill">The problem</span>
+      <div class="why-head">
+        <h2 class="h-section">The answers already exist. <mark class="l-mark">They’re just buried.</mark></h2>
+      </div>
+      <div class="features">
+        <div class="feature"><div class="ico">⌕</div><h3>Scattered</h3><p>Spread across the web.</p></div>
+        <div class="feature"><div class="ico">⌛</div><h3>Forgotten</h3><p>Dead startups vanish.</p></div>
+        <div class="feature"><div class="ico">↻</div><h3>Repeated</h3><p>Same mistakes, again.</p></div>
+        <div class="feature"><div class="ico">✓</div><h3>premortem</h3><p>All in one place, sourced.</p></div>
+      </div>
+    </section>
+
+    <!-- 3. How it works -->
+    <div class="l-pin" id="how-pin">
+    <section class="card" id="how">
+      <span class="pill">How it works</span>
+      <h2 class="h-section l-title">One line in. <mark class="l-mark">A premortem out.</mark></h2>
+      <div class="l-steps-line"><span id="l-steps-fill"></span></div>
+      <div class="l-how">
+      <ol class="l-steps">
+        <li><span class="l-step-n">1</span><b>Type your idea</b><p>One line is enough.</p></li>
+        <li><span class="l-step-n">2</span><b>We search the news</b><p>Six angles, India and worldwide.</p></li>
+        <li><span class="l-step-n">3</span><b>We fact-check</b><p>Every company, every source.</p></li>
+        <li><span class="l-step-n">4</span><b>You decide</b><p>Score, causes, red flags.</p></li>
+      </ol>
+      <div class="l-demo" aria-hidden="true">
+        <div class="l-demo-bar"><i></i><i></i><i></i><span>premortem</span></div>
+        <div class="l-pane" data-i="0">
+          <p class="l-pane-label">Describe the business you want to build</p>
+          <div class="l-demo-input"><span class="l-type">10-minute grocery delivery</span><b>Run →</b></div>
+        </div>
+        <div class="l-pane" data-i="1">
+          <p class="l-pane-label">Searching six angles</p>
+          <div class="l-chips"><span>startups that shut down</span><span>failed in India</span><span>shut down worldwide</span><span>founders’ own posts</span><span>still running</span><span>business type, wider</span></div>
+        </div>
+        <div class="l-pane" data-i="2">
+          <p class="l-pane-label">Reading &amp; fact-checking</p>
+          <div class="l-checks">
+            <div><i>✓</i><b>Blip</b><span>4 sources</span></div>
+            <div><i>✓</i><b>Dunzo</b><span>2 sources</span></div>
+            <div><i>✓</i><b>Jokr</b><span>1 source</span></div>
+            <div class="drop"><i>✕</i><b>No source?</b><span>dropped</span></div>
+          </div>
+        </div>
+        <div class="l-pane" data-i="3">
+          <p class="l-pane-label">Your premortem · “10-minute grocery delivery”</p>
+          <div class="l-mini">
+            <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="t"/><circle cx="60" cy="60" r="50" class="f" id="l-mini-ring"/></svg>
+            <div class="l-mini-n"><b id="l-mini-score">–</b><span id="l-mini-label">risk</span></div>
+            <div class="l-mini-side"><small>#1 cause of death</small><strong id="l-mini-cause">—</strong><small id="l-mini-dead"></small></div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+    </div>
+
+    <!-- 4. What you get -->
+    <section class="card">
+      <span class="pill">What you get</span>
+      <h2 class="h-section l-title">Everything on one page</h2>
+      <div class="l-gets">
+        <div class="feature l-get">
+          <div class="l-viz l-viz-ring" id="ins-risk"><svg viewBox="0 0 88 88"><circle cx="44" cy="44" r="34" class="lp-track"/><circle cx="44" cy="44" r="34" class="lp-fill" stroke-dasharray="213.6" stroke-dashoffset="98"/></svg><b>54</b></div>
+          <h3>Your odds</h3><p>One score out of 100.</p>
+        </div>
+        <div class="feature l-get">
+          <div class="l-viz l-viz-bars" id="ins-causes"><span style="--w:78%"></span><span style="--w:52%"></span><span style="--w:30%"></span></div>
+          <h3>How they died</h3><p>The top causes, with proof.</p>
+        </div>
+        <div class="feature l-get">
+          <div class="l-viz l-viz-flags" id="ins-flag"><i class="yes">Yes</i><i class="no">No</i><i class="yes">Yes</i></div>
+          <h3>Your red flags</h3><p>A 30-second check.</p>
+        </div>
+        <div class="feature l-get">
+          <div class="l-viz l-viz-cards" id="ins-life"><span class="d"></span><span class="a"></span><span class="d"></span></div>
+          <h3>Who tried it</h3><p>Every company, sourced.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Example reports (live) -->
+    <section class="card" id="examples">
+      <span class="pill">Example reports</span>
+      <h2 class="h-section l-title">Open a real premortem</h2>
+      <div class="l-examples" id="l-examples"></div>
+    </section>
+
+    <!-- 6. Who it's for -->
+    <section class="card">
+      <span class="pill">Who it’s for</span>
+      <h2 class="h-section l-title">For anyone about to build</h2>
+      <div class="l-who">
+        <div><b>Founders</b><p>Before you quit your job.</p></div>
+        <div><b>Mentors</b><p>A fast reality check.</p></div>
+        <div><b>Students</b><p>Learn from real failures.</p></div>
+        <div><b>Investors</b><p>Before you write a cheque.</p></div>
+      </div>
+    </section>
+
+    <!-- 7. Honesty -->
+    <section class="card l-honest">
+      <span class="pill">Nothing made up</span>
+      <h2 class="h-section l-title">Our rules</h2>
+      <ul class="l-rules">
+        <li><b>No source, no company.</b></li>
+        <li><b>Real quotes only.</b></li>
+        <li><b>No guessing — “reason not reported”.</b></li>
+        <li><b>Best case, not worst.</b></li>
+      </ul>
+    </section>
+
+    <!-- 8. FAQ -->
+    <section class="card" id="faq">
+      <span class="pill">FAQ</span>
+      <h2 class="h-section l-title">Questions founders ask</h2>
+      <div class="l-faq">
+        <details><summary>Is it free?</summary><p>Yes. New research is limited to a few searches a day per person.</p></details>
+        <details><summary>Where does the data come from?</summary><p>Public news and founders’ own posts — every company links to its sources.</p></details>
+        <details><summary>What happens to my idea?</summary><p>Only your one line is sent to our AI. Don’t type anything confidential.</p></details>
+        <details><summary>Is the score a prediction?</summary><p>No — it’s what happened to companies like yours. Treat it as the best case.</p></details>
+      </div>
+    </section>
+
+    <!-- 9. Email sign-up -->
+    <section class="card l-signup" id="notify">
+      <div>
+        <span class="pill">Stay in the loop</span>
+        <h2 class="h-section l-title">Get new business types first</h2>
+        <p class="sub">Occasional emails. No spam.</p>
+      </div>
+      <form id="signup" class="l-form" novalidate>
+        <div class="l-form-row">
+          <input type="email" id="email" placeholder="you@example.com" aria-label="Your email address" autocomplete="email" required>
+          <button type="submit" class="btn btn-signal">Notify me</button>
+        </div>
+        <label class="l-consent"><input type="checkbox" id="consent"> I agree to occasional emails. Unsubscribe anytime — we never share your email.</label>
+        <p class="l-msg" id="signup-msg" role="status"></p>
+      </form>
+    </section>
+
+    <!-- 10. Final call to action -->
+    <section class="card l-final">
+      <h2 id="l-final-title">Your idea deserves a <span class="accent">premortem</span> before it gets a post-mortem.</h2>
+      <a class="btn btn-signal" href="index.html">Run a free premortem →</a>
+    </section>
+
+    <footer class="footer card">
+      <div class="footer-top">
+        <div>
+          <img src="assets/logo-header.png" alt="premortem" class="footer-logo">
+          <p>See who tried your idea — before you build.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#how">How it works</a>
+          <a href="#faq">FAQ</a>
+          <a href="index.html">Try premortem</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Only your one-line idea is sent to our AI.</span>
+        <a href="#top" class="back-top">Back to top ↑</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="ink.js?v=44"></script>
+  <script src="hover.js?v=44"></script>
+  <script src="landing.js?v=52"></script>
+</body>
+</html>

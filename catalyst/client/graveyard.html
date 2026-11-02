@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>premortem — the startup graveyard</title>
+  <meta name="description" content="Walk through a graveyard of real businesses that shut down — then see what could kill your idea, before you build it.">
+  <meta property="og:title" content="The startup graveyard — premortem">
+  <meta property="og:description" content="Every stone is a real business that shut down, with sources. See what could kill your idea before you build it.">
+  <meta property="og:image" content="https://whotriedit-60093906253.development.catalystserverless.in/app/assets/share-card.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#F4F1EA">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="graveyard.css?v=9">
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <!-- the 3D world and the heartbeat line sit behind everything -->
+  <canvas id="world" aria-hidden="true"></canvas>
+  <canvas id="pulse" aria-hidden="true"></canvas>
+
+  <nav class="g-nav">
+    <a href="landing.html" class="g-logo" aria-label="premortem home"><img src="assets/logo-header.png" alt="premortem" width="194" height="30"></a>
+    <a href="index.html" class="g-nav-cta">Try premortem</a>
+  </nav>
+
+  <!-- 1. Hero -->
+  <section class="g-panel g-hero" data-in="0" data-out="0.13">
+    <span class="g-pill"><i></i>premortem</span>
+    <h1>Every startup dies of something. <em>See what could kill yours.</em></h1>
+    <p>We read the news so you don’t have to: every company that tried your idea, and exactly how the ones that shut down died — before you build.</p>
+    <p class="g-tease">Below are <b id="g-tease-n">200+</b> real businesses that shut down. Walk past them first — then run yours.</p>
+    <button type="button" class="g-enter" id="g-enter"><span class="g-enter-dot" aria-hidden="true"></span>Walk through the graveyard <span class="g-enter-arrow" aria-hidden="true">↓</span></button>
+  </section>
+
+  <!-- 2. Trust numbers (real, from our database) -->
+  <section class="g-panel g-count" data-in="0.24" data-out="0.39">
+    <p class="g-eyebrow">What we’ve dug up so far</p>
+    <h2><b data-key="companies">–</b> companies tracked.<br>Every single one from the news.</h2>
+    <div class="g-stats">
+      <div><b data-key="sources">–</b><span>news articles cited as proof</span></div>
+      <div><b data-key="shut_down">–</b><span>shut down — the stones around you</span></div>
+      <div><b data-key="business_types">–</b><span>business types researched, more every night</span></div>
+      <div><b class="zero">0</b><span>made up. No source, no company.</span></div>
+    </div>
+  </section>
+
+  <!-- 2b. The graveyard lights up by cause of death -->
+  <section class="g-panel g-cause" data-in="0.5" data-out="0.83">
+    <p class="g-eyebrow" id="g-cause-rank">The #1 reported killer</p>
+    <h3 id="g-cause-name">–</h3>
+    <p><b id="g-cause-n">–</b> <span id="g-cause-of"></span></p>
+    <div class="g-cause-bar"><span id="g-cause-bar"></span></div>
+    <small id="g-cause-note"></small>
+  </section>
+
+  <!-- 3. Walking hint -->
+  <section class="g-panel g-hint" data-in="0.42" data-out="0.85">
+    <p id="g-hint-text">Move your lantern to read the stones · click one to open its report</p>
+  </section>
+
+  <!-- 4. The end -->
+  <section class="g-panel g-end" data-in="0.955" data-out="9">
+    <p class="g-eyebrow">A new day</p>
+    <h2>It doesn’t have to end <em>this way.</em></h2>
+    <p>See what could kill your idea — and fix it before you build. Free, sourced, in a minute or two.</p>
+    <form class="g-form" data-form>
+      <input name="idea" maxlength="200" placeholder="Describe your idea in one line" aria-label="Your business idea" autocomplete="off">
+      <button type="submit">Run premortem</button>
+    </form>
+    <p class="g-msg" data-msg role="status"></p>
+    <a class="g-back" href="landing.html">Learn more about premortem →</a>
+  </section>
+
+  <nav class="g-rail" aria-label="Your journey">
+    <a data-at="0.02"><span>Your idea</span></a>
+    <a data-at="0.3"><span>Dusk</span></a>
+    <a data-at="0.45"><span>The graveyard</span></a>
+    <a data-at="0.62"><span>What killed them</span></a>
+    <a data-at="0.87"><span>Your idea’s stone</span></a>
+    <a data-at="0.99"><span>A new day</span></a>
+  </nav>
+  <div class="g-cue" id="g-cue" aria-hidden="true"><span class="g-mouse"><i></i></span>Scroll</div>
+  <canvas class="g-bolts" id="g-bolts" aria-hidden="true"></canvas>
+  <div class="g-dread" id="g-dread" aria-hidden="true"></div>
+  <div class="g-flash" id="g-flash" aria-hidden="true"></div>
+  <div class="g-tip" id="g-tip" role="tooltip"></div>
+  <div class="g-scroller"></div>
+
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script type="module" src="graveyard.js?v=12"></script>
+</body>
+</html>
