@@ -8,10 +8,10 @@ const fs = require("fs");
   pg.on("pageerror", (e) => console.log("PAGEERR", e.message));
   await pg.goto(isNaN(+v) ? `http://localhost:8766/${v}.html` : `http://localhost:8766/video.html?v=${v}`);
   await pg.waitForFunction(() => window.READY === true, null, { timeout: 120000 });
-  const { W, H, DURATION, CUES, BPM, MOOD } = await pg.evaluate(() => ({ W, H, DURATION, CUES, BPM, MOOD }));
+  const { W, H, DURATION, CUES, BPM, MOOD, MUSIC } = await pg.evaluate(() => ({ W, H, DURATION, CUES, BPM, MOOD, MUSIC: typeof MUSIC !== "undefined" ? MUSIC : null }));
   await pg.setViewportSize({ width: W, height: H });
   const out = `frames${v}`; fs.mkdirSync(out, { recursive: true });
-  fs.writeFileSync(`cues${v}.json`, JSON.stringify({ duration: DURATION, bpm: BPM, mood: MOOD, cues: CUES }));
+  fs.writeFileSync(`cues${v}.json`, JSON.stringify({ duration: DURATION, bpm: BPM, mood: MOOD, music: MUSIC, cues: CUES }));
   const times = only ? only.split(",").map(Number) : Array.from({ length: Math.round(DURATION * fps) }, (_, i) => i / fps);
   let n = 0;
   for (const t of times) {

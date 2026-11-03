@@ -100,3 +100,35 @@ afconvert -f m4af -d aac -b 256000 audio1.wav audio1.m4a
 **Video 4 — "Hall of Shut-Downs"** follows this: a quiet 3D museum where each room is a real cause of death, a sculpture under a spotlight (a falling coin tower, a pawn beside a giant king, a knot that can't be untied, an empty chair), real plaques with real companies, and an empty plinth at the end: *"Your idea isn't in here. Yet."* Sound: footsteps with hall echo, spotlight clunks, soft bell notes, a low drone.
 
 **Other original concepts ready to build next:** *One Line* (whole video drawn by one orange line) · *The Scan* (X-ray / MRI of a pitch deck) · *Startup Forecast* (a weather report for business types) · *Paper Trail* (newspaper cut-outs + red string) · *Rewind* (a shut-down office running backwards in time).
+
+---
+
+## Video 1 — REMASTERED (`premortem-video-1-before-you-build-REMASTERED.mp4`, 29s, 1080p)
+
+Same story and real numbers as video 1, rebuilt with cinematic effects and a new soundtrack.
+
+**New visual effects**
+| Moment | Effect |
+|---|---|
+| Open | Dark heart-monitor: glowing ECG with afterglow, grid, scanlines, red glow pulsing on every beat, live BPM readout |
+| Flatline | Red flash + shockwave ring + **chromatic aberration** (RGB split), "premortem." lands with a **glitch**, then a **light sweep** |
+| Into the app | **Iris wipe** from the heart-line into the cream scene; search box tilts up in **3D**; label **decodes** like a terminal |
+| "Run." | Comet trail on the pen-tip, burst lines, RGB-split slam, white flash, then a **zoom-through** into the next scene |
+| We read the news | **3D fly-through tunnel** of real headlines with speed streaks + a **slot-machine rolling counter** (912) |
+| Who tried it? | Tombstones **slam** with squash, **dust puffs, flying debris**, drifting fog, rising embers, **letterbox bars** |
+| How they died | **Whip pan** in; bars with moving stripes, gloss and pop-in count badges |
+| Risk score | 72-tick dial lighting up, rotating **light rays**, sparks converging, a "lock" pulse |
+| Red flags | Cards **flip in 3D**; answers land like **rubber stamps** |
+| Sourced | Evidence board: threads draw on, **glowing pulses travel** along them, "✓ VERIFIED" stamps |
+| Slogans | One per beat: slam + RGB split, glitch, letters raining in, "Free." with rays and **confetti** |
+| End card | Light rays, logo builds, **shine sweep** across the wordmark, cursor clicks the button, URL types itself, green heartbeat |
+| Everywhere | Handheld camera float, impact shakes, moving film grain, vignette, warm drifting light leaks |
+
+**New sound** (`sound_cine.py`, all synthesised, no copyright): heartbeat, monitor beep and flatline, cinematic boom and "braam",
+glitch stutters, keyboard keys, doppler zip, metallic slams, sub drop, reverse swells, data blips, card fly-bys, stone slams with
+crumble, whip pans, swipes, a riser into a "lock", paper flips, stamps, electric zaps, verify dings, sparkles, a logo chime — all in
+one synthetic reverb hall. Music follows the story: drone → tension → build with snare roll → drop → dark graveyard groove → lift →
+**stop** for the slogans → bright outro.
+
+**Rebuild it:** `python3 -m http.server 8766 &` then `node render.cjs 5` → `python3 sound_cine.py 5` →
+`afconvert -f m4af -d aac -b 256000 audio5.wav audio5.m4a` → `./encode frames5 30 audio5.m4a premortem-video-1-before-you-build-REMASTERED.mp4`
