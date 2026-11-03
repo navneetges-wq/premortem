@@ -302,3 +302,26 @@ body.landing .lp-card, body.landing .l-ticker { -webkit-backdrop-filter: none; b
 .features .feature p, .l-who p { font-size: 14.5px; }
 .l-rules li { padding-left: 34px; color: var(--ink); }
 .l-get .l-viz.ins { display: flex !important; flex-direction: column; justify-content: flex-start !important; align-items: stretch !important; place-content: initial !important; padding: 18px !important; gap: 0 !important; }
+
+/* ---------- the 30-second film ---------- */
+.l-film .l-title { margin: 14px 0 22px; }
+@media (min-width: 900px) { .l-film { text-align: center; } .l-film .l-title { margin: 14px auto 26px; } }
+.l-film-frame { position: relative; aspect-ratio: 16 / 9; max-width: 940px; margin: 0 auto; border-radius: 22px; overflow: hidden; background: #0b0a0d;
+  box-shadow: 0 30px 70px rgba(40, 20, 10, .28), 0 0 0 1px rgba(22, 22, 22, .08); }
+.l-film-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.l-film-play { position: absolute; left: 50%; bottom: 9%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 12px;
+  padding: 14px 22px 14px 16px; border: 0; white-space: nowrap; border-radius: 999px; cursor: pointer; font: 700 16px/1 Manrope, sans-serif; color: #fff;
+  background: linear-gradient(135deg, #F7A86E, #E4502F 60%, #C9451F); box-shadow: 0 14px 34px rgba(228, 80, 47, .45), 0 0 0 6px rgba(228, 80, 47, .18);
+  transition: transform .2s ease, box-shadow .2s ease; }
+.l-film-play:hover { transform: translateX(-50%) scale(1.05); box-shadow: 0 18px 40px rgba(228, 80, 47, .55), 0 0 0 9px rgba(228, 80, 47, .16); }
+.l-film-play:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.l-film-tri { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, .22); position: relative; flex: none; }
+.l-film-tri::after { content: ""; position: absolute; left: 13px; top: 10px; border-style: solid; border-width: 7px 0 7px 11px; border-color: transparent transparent transparent #fff; }
+.l-film-play small { font: 500 12px/1 var(--mono); opacity: .8; padding-left: 10px; border-left: 1px solid rgba(255, 255, 255, .35); }
+.l-film.playing .l-film-play { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+@media (max-width: 640px) {
+  .l-film-frame { border-radius: 14px; }
+  .l-film-play { padding: 8px 16px 8px 8px; font-size: 14px; bottom: 8%; gap: 10px; }
+  .l-film-play small { display: none; }
+  .l-film-tri { width: 28px; height: 28px; } .l-film-tri::after { left: 11px; top: 8px; border-width: 6px 0 6px 9px; }
+}

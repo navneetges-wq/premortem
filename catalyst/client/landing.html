@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=43">
-  <link rel="stylesheet" href="landing.css?v=56">
+  <link rel="stylesheet" href="landing.css?v=58">
 </head>
 <body id="top" class="landing">
   <div class="l-progress" aria-hidden="true"><span></span></div>
@@ -73,6 +73,18 @@
 
     <!-- live ticker: real businesses that shut down (from our graveyard) -->
     <div class="l-ticker" aria-label="Real businesses that shut down"><div class="l-ticker-track" id="l-ticker"></div></div>
+
+    <!-- the 30-second film (loads only when played) -->
+    <section class="card l-film" id="film">
+      <span class="pill">Watch</span>
+      <h2 class="h-section l-title">premortem in <mark class="l-mark">30 seconds</mark></h2>
+      <div class="l-film-frame">
+        <video id="l-film" preload="none" playsinline poster="assets/premortem-promo-poster.jpg" aria-label="premortem in 30 seconds">
+          <source src="assets/premortem-promo.mp4" type="video/mp4">
+        </video>
+        <button type="button" class="l-film-play" id="l-film-play" aria-label="Play the 30-second film with sound"><span class="l-film-tri" aria-hidden="true"></span>Play with sound<small>0:29</small></button>
+      </div>
+    </section>
 
     <!-- 2. The problem -->
     <section class="card">
@@ -246,7 +258,7 @@
 
   <script src="ink.js?v=44"></script>
   <script src="hover.js?v=44"></script>
-  <script src="landing.js?v=52"></script>
+  <script src="landing.js?v=53"></script>
   <script data-goatcounter="https://premortem.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

@@ -317,3 +317,16 @@ requestAnimationFrame(tickerLoop);
   const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { io.disconnect(); setTimeout(play, 350); } }, { threshold: 0.3 });
   io.observe(box);
 })();
+
+// ---------- the 30-second film: nothing downloads until someone presses play ----------
+(() => {
+  const v = document.getElementById("l-film"), btn = document.getElementById("l-film-play"), box = document.getElementById("film");
+  if (!v || !btn) return;
+  btn.addEventListener("click", () => {
+    box.classList.add("playing"); v.controls = true; v.muted = false;
+    const p = v.play(); if (p && p.catch) p.catch(() => { box.classList.remove("playing"); });
+  });
+  v.addEventListener("ended", () => { box.classList.remove("playing"); v.controls = false; v.currentTime = 0; v.load(); });
+  // pause if it scrolls well out of view
+  if ("IntersectionObserver" in window) new IntersectionObserver((e) => { if (!e[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.15 }).observe(v);
+})();
