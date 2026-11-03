@@ -711,17 +711,25 @@ function premortemText(p) {
 // This re-tags them against the visitor's own sentence. Returns the indexes that are "same idea".
 async function closestToIdea(idea, companies) {
   if (!companies.length) return new Set();
-  const list = companies.map((c, i) => `[${i + 1}] ${c.name}: ${String(c.what_they_did || "").replace(/\s+/g, " ").slice(0, 140)}`).join("\n");
-  const out = await askGemini(`Business idea: "${idea}"
-Below are companies. List the numbers of the ones that did basically the SAME thing as this idea (same kind of
-product or service for the same kind of customer). Leave out ones that are only loosely related.
+  // Ask in batches of 40 (a long list makes the AI skip names) — all batches at once.
+  const batches = [];
+  for (let i = 0; i < companies.length; i += 40) batches.push(companies.slice(i, i + 40).map((c, j) => [i + j, c]));
+  const picked = await Promise.all(batches.map(async (batch) => {
+    const list = batch.map(([, c], j) => `[${j + 1}] ${c.name}: ${String(c.what_they_did || "").replace(/\s+/g, " ").slice(0, 160)}`).join("\n");
+    const out = await askGemini(`Business idea: "${idea}"
+Below are companies. List the numbers of the ones that are basically the same kind of business as this idea:
+the same core product or service for the same kind of customer — even if the city, size, name or small details
+differ (e.g. for a pet café, other pet or dog cafés count). Leave out ones that only share the broad industry
+(e.g. for a pet café, an ordinary burger chain does not count).
 
 ${list}`, {
-    type: "OBJECT",
-    properties: { same_idea: { type: "ARRAY", items: { type: "INTEGER" } } },
-    required: ["same_idea"],
-  }, 0);
-  return new Set((out.same_idea || []).filter((n) => n >= 1 && n <= companies.length).map((n) => n - 1));
+      type: "OBJECT",
+      properties: { same_idea: { type: "ARRAY", items: { type: "INTEGER" } } },
+      required: ["same_idea"],
+    }, 0);
+    return (out.same_idea || []).filter((n) => n >= 1 && n <= batch.length).map((n) => batch[n - 1][0]);
+  }));
+  return new Set(picked.flat());
 }
 
 // ---------- Step 7: print it nicely ----------

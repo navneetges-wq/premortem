@@ -218,7 +218,7 @@ module.exports = async (req, res) => {
       if (idea && companies.length) {
         try {
           // Which companies are closest to this exact sentence — remembered for 24h (asking the AI takes ~1.3s).
-          const ckey = "m" + crypto.createHash("sha1").update(`${niche}|${companies.length}|${idea.toLowerCase()}`).digest("hex").slice(0, 24);
+          const ckey = "m2" + crypto.createHash("sha1").update(`${niche}|${companies.length}|${idea.toLowerCase()}`).digest("hex").slice(0, 24);
           let names = null;
           try { names = JSON.parse(await new Cache().segment().getValue(ckey)); } catch { /* not remembered yet */ }
           if (!Array.isArray(names)) {
