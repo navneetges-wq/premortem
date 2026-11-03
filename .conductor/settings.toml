@@ -1,0 +1,11 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+# Private files that are never on GitHub — copied into every new workspace from the main repo folder.
+file_include_globs = """
+keys.txt
+catalyst/.catalystrc
+catalyst/functions/*/catalyst-config.json
+"""
+
+[scripts]
+setup = "bash scripts/conductor-setup.sh"

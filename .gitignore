@@ -22,3 +22,6 @@ promo/audio*.m4a
 promo/cues*.json
 promo/test*
 promo/render*.log
+
+# Conductor: personal overrides
+.conductor/settings.local.toml
