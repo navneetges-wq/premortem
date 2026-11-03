@@ -318,15 +318,27 @@ requestAnimationFrame(tickerLoop);
   io.observe(box);
 })();
 
-// ---------- the 30-second film: nothing downloads until someone presses play ----------
+// ---------- the 30-second film ----------
+// Nothing downloads until the visitor scrolls near it; then it buffers so "Play" starts at once.
+// Safari/iPhone need byte-range requests, which our host doesn't do, so they get the GitHub Pages copy;
+// every other browser gets the (faster) copy on our own site, falling back to GitHub if it fails.
 (() => {
   const v = document.getElementById("l-film"), btn = document.getElementById("l-film-play"), box = document.getElementById("film");
   if (!v || !btn) return;
-  btn.addEventListener("click", () => {
-    box.classList.add("playing"); v.controls = true; v.muted = false;
-    const p = v.play(); if (p && p.catch) p.catch(() => { box.classList.remove("playing"); });
+  const ua = navigator.userAgent, webkitOnly = /iP(hone|ad|od)/.test(ua) || (/Safari/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/.test(ua));
+  let chosen = webkitOnly ? v.dataset.gh : v.dataset.site;
+  const arm = () => { if (!v.getAttribute("src")) { v.preload = "auto"; v.src = chosen; v.load(); } };
+  v.addEventListener("error", () => {
+    if (chosen !== v.dataset.gh) { const wasPlaying = box.classList.contains("playing"); chosen = v.dataset.gh; v.src = chosen; v.load(); if (wasPlaying) v.play().catch(() => {}); }
   });
-  v.addEventListener("ended", () => { box.classList.remove("playing"); v.controls = false; v.currentTime = 0; v.load(); });
-  // pause if it scrolls well out of view
-  if ("IntersectionObserver" in window) new IntersectionObserver((e) => { if (!e[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.15 }).observe(v);
+  if ("IntersectionObserver" in window) {
+    const near = new IntersectionObserver((e) => { if (e[0].isIntersecting) { near.disconnect(); arm(); } }, { rootMargin: "500px 0px" });
+    near.observe(v);
+    new IntersectionObserver((e) => { if (!e[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.15 }).observe(v);
+  }
+  btn.addEventListener("click", () => {
+    arm(); box.classList.add("playing"); v.controls = true; v.muted = false;
+    const p = v.play(); if (p && p.catch) p.catch(() => { box.classList.remove("playing"); v.controls = false; });
+  });
+  v.addEventListener("ended", () => { box.classList.remove("playing"); v.controls = false; v.load(); });
 })();
