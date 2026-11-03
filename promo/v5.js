@@ -161,8 +161,8 @@ var SCENES = [
         at(1290, 110, words("We _read_ / _the_ *news.*", lt, 0.2, { size: 112, color: C.cream, align: "right" })) + scanlines(0.06);
     } },
   // ---- S5: tombstones slam down — dust, debris, fog, embers, letterbox ----
-  { a: 9.0, b: 11.65, dark: true, bg: darkBg("radial-gradient(900px 500px at 50% -10%, rgba(170,180,220,.18), transparent 70%)"),
-    cam: (lt) => { const w = E.inOut(P(lt, 2.4, 0.25)); return { s: 1.02 + lt * 0.012, x: -w * 1900, blur: w * 16 }; }, draw: (lt) => {
+  { a: 9.0, b: 12.85, dark: true, bg: darkBg("radial-gradient(900px 500px at 50% -10%, rgba(170,180,220,.18), transparent 70%)"),
+    cam: (lt) => { const w = E.inOut(P(lt, 3.6, 0.25)); return { s: 1.02 + lt * 0.012, x: -w * 1900, blur: w * 16 }; }, draw: (lt) => {
       const row = dead.map((c, i) => {
         const t0 = 0.15 + i * 0.22, fall = E.in(P(lt, t0, 0.3)), land = P(lt, t0 + 0.3, 0.22);
         const sq = Math.sin(land * Math.PI) * 0.07;
@@ -303,6 +303,13 @@ cue(22.2, "slam", { shake: 7, flash: "#161616" });
 cue(22.8, "boom", { shake: 14, flash: "#ffffff", wave: [960, 540, "#ffffff"] }); cue(22.85, "sparkle");
 cue(23.4, "swoosh", { up: 1 }); cue(23.6, "chime"); cue(23.4 + 1.7, "shine"); cue(23.4 + 3.6, "click");
 cue(23.4 + 0.2 + 3.2 * 0.66, "heart"); cue(23.4 + 0.2 + 3.2 * 0.68, "beep", { f: 1318 });
+
+// ---------- hold "10 of 27 companies shut down." longer: everything from 11.4s on moves 1.2s (two beats) later ----------
+const HOLD = 1.2, HOLD_AT = 11.3;
+SCENES.forEach((sc) => { if (sc.a >= HOLD_AT) { sc.a += HOLD; sc.b += HOLD; } });
+CUES.forEach((c) => { if (c.t >= HOLD_AT) c.t = +(c.t + HOLD).toFixed(3); });
+MUSIC.forEach((m) => { if (m.a >= HOLD_AT) m.a += HOLD; if (m.b >= HOLD_AT) m.b += HOLD; });
+DURATION += HOLD;
 
 // ---------- post effects + frame renderer ----------
 (function () {
