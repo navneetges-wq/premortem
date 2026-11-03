@@ -267,7 +267,7 @@ function tickerLoop(now) {
   const y = scrollY;
   if (lastY >= 0) { const v = (y - lastY) / Math.max(dt, 0.001); vel += (v - vel) * 0.25; }
   lastY = y;
-  if (tickerReady && tickerOnScreen && !STILL) {
+  if (tickerReady && tickerOnScreen && !STILL && !document.body.classList.contains("film-on")) {
     const track = document.getElementById("l-ticker");
     if (Math.abs(vel) > 30) tickerDir = vel > 0 ? -1 : 1;
     tickerX += tickerDir * (45 + Math.min(700, Math.abs(vel) * 0.5)) * dt;
@@ -348,4 +348,7 @@ requestAnimationFrame(tickerLoop);
     const p = v.play(); if (p && p.catch) p.catch(() => { box.classList.remove("playing"); v.controls = false; });
   });
   v.addEventListener("ended", () => { box.classList.remove("playing"); v.controls = false; v.load(); });
+  // while the film plays, switch off the page's own moving effects (cursor ink layer over the video, ticker) so playback stays smooth
+  v.addEventListener("playing", () => document.body.classList.add("film-on"));
+  ["pause", "ended", "emptied"].forEach((ev) => v.addEventListener(ev, () => document.body.classList.remove("film-on")));
 })();
