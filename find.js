@@ -133,7 +133,9 @@ function matchNiche(answer) {
 async function sortIdea(idea) {
   const list = NICHES.map((n) => `- ${n.name}: ${n.about}`).join("\n");
   const prompt = `Sort this one-line business idea into exactly one niche from the fixed list below (pick the
-narrowest one that fits). Then write short web searches to find startups that already tried it.
+narrowest one that fits). Decide by what the customer mainly pays for — the core business — not by extras or
+themes: a themed restaurant or café is a restaurant/café even if it has play areas, animals or entertainment;
+a coaching app is education even if it sells devices. Then write short web searches to find startups that already tried it.
 
 idea_searches: exactly 3 searches using the idea's OWN key words (its product, customer or angle), e.g. for
 "premium sneaker brand from Chennai": "Indian sneaker brand shut down", "D2C sneaker startup shuts down",
@@ -262,15 +264,16 @@ async function findCompanies(idea, niche, articles, model = GEMINI_MODEL, onProg
 
 async function findInBatch(idea, niche, articles, allNumbers, model) {
   const prompt = `Read every numbered article below, one by one, and list EVERY company (or a big company's
-dedicated business line, like "Instamart (Swiggy)") whose main business is this niche, anywhere in the
-world: ones that shut down, ones still running, and ones that were bought. Be thorough: articles that
-list companies often mention 10–40 of them.
+dedicated business line, like "Instamart (Swiggy)") whose main business is this niche, OR that did the same
+thing as the business idea (even if it belongs to a different niche), anywhere in the world: ones that shut down,
+ones still running, and ones that were bought. Companies doing the same thing as the idea matter most — never
+leave one out. Be thorough: articles that list companies often mention 10–40 of them.
 
 Business idea: "${idea}"
 Niche: ${nicheText(niche)}
 
 - If a company was renamed, list it once under its latest name, like "Blinkit (formerly Grofers)".
-- Skip companies from a different niche that are only mentioned for comparison.
+- Skip companies from a different niche that are only mentioned for comparison (unless they did the same thing as the idea).
 - Skip investors, suppliers, customers, software vendors, consultants, research firms and news sites.
 For each company, give the numbers of ALL articles that mention it.
 
@@ -417,9 +420,10 @@ ${numbered(articles, numbers)}`;
 }
 
 // ---------- Step 4: keep only companies with real sources, remove duplicates ----------
+const plain = (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // "Café" → "Cafe"
 const simpleName = (name) =>
-  name.toLowerCase().replace(/\(.*?\)/g, "").replace(/\b(pvt|private|ltd|limited|inc|technologies|labs)\b/g, "").replace(/[^a-z0-9]/g, "");
-const lettersOnly = (text) => text.toLowerCase().replace(/[^a-z0-9]/g, "");
+  plain(name).toLowerCase().replace(/\(.*?\)/g, "").replace(/\b(pvt|private|ltd|limited|inc|technologies|labs)\b/g, "").replace(/[^a-z0-9]/g, "");
+const lettersOnly = (text) => plain(text).toLowerCase().replace(/[^a-z0-9]/g, "");
 
 const hostOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
@@ -452,7 +456,7 @@ function cleanUp(companies, articles) {
   const kept = new Map();
 
   for (const c of companies) {
-    if (!c.name || c.in_niche === false) continue; // different kind of business
+    if (!c.name || (c.in_niche === false && c.match !== "same idea")) continue; // different kind of business (but keep anything that did the same thing as the idea)
     // No source link, no company. Article numbers must point to articles we really fetched,
     // and those articles must really name the company.
     const sources = [...new Set(c.source_numbers || [])]

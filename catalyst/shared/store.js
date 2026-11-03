@@ -135,6 +135,9 @@ async function recentSearchFor(idea, days) {
   const key = idea.trim().toLowerCase();
   return (await allRows(tables().searches)).some((r) => {
     if (String(r.idea || "").trim().toLowerCase() !== key || r.state === "failed") return false;
+    // Only real research counts. A search answered from saved results ("Ready (saved results)") is created the moment
+    // someone searches — counting it meant the exact-idea research never ran for any business type already researched.
+    if (/^(Ready \(saved|Saved results)/.test(String(r.progress || ""))) return false;
     const when = new Date(String(r.CREATEDTIME || "").replace(" ", "T").replace(/:(\d{3})$/, ".$1"));
     return isNaN(when) || (Date.now() - when) / 86400000 < days;
   });
