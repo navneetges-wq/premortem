@@ -101,7 +101,7 @@ const beatT = s1beats.map((b) => ((b + 0.24 * 260) / W) * PEN1);
 beatT.forEach((tb) => { cue(tb - 0.05, "heart"); cue(tb, "beep"); });
 cue(0, "drone", { len: 2.6 });
 cue(PEN1, "flat", { len: 1.7 });
-cue(PEN1, "boom", { shake: 9, flash: "#E4502F", ca: 1, wave: [960, 640, "#E4502F"] });
+cue(PEN1, "boom", { shake: 9, flash: "#E4502F", wave: [960, 640, "#E4502F"] });
 
 // ---------- timeline ----------
 var SCENES = [
@@ -118,7 +118,7 @@ var SCENES = [
       const red = 0.5 * (1 - E.out(P(lt, 0, 0.7))), land = P(lt, 0.42, 0.25), g = lt > 0.42 ? Math.max(0, 1 - (lt - 0.42) / 0.45) : 0;
       const pm = shineText("premortem.", 220, P(lt, 1.0, 0.7), C.signal, "#ffe2cf", `transform:scale(${lerp(1.5, 1, E.out5(land))});filter:blur(${((1 - E.out(land)) * 18).toFixed(1)}px);opacity:${clamp(land * 3)}`);
       return `<div style="position:absolute;inset:0;background:rgba(228,80,47,${red.toFixed(3)})"></div>` +
-        center(words("_Most_ _never_ _run_ _a_", lt, 0.02, { size: 112, stagger: 0.07, color: C.cream }) + `<div style="height:14px"></div>` + glitch(pm, g, Math.floor(lt * 24)), "padding-bottom:360px") +
+        center(words("_Most_ _never_ _run_ _a_", lt, 0.02, { size: 112, stagger: 0.07, color: C.cream }) + `<div style="height:14px"></div>` + pm, "padding-bottom:360px") +
         at(0, 600, ecgGlow({ w: W, h: 300, beats: [], head: W, tip: false })) + embers(lt + 2.4, "255,120,80", 30, 0.45) + scanlines(0.05);
     } },
   // ---- S3: iris opens onto cream; the idea is typed; the pen-tip zips in and presses ----
@@ -133,11 +133,11 @@ var SCENES = [
       if (zip > 0 && zip < 1) for (let j = 12; j >= 1; j--) { const [x, y] = dot(lt - j * 0.012); trail += `<div style="position:absolute;left:${x + 22 - (22 - j)}px;top:${y + 22 - (22 - j)}px;width:${44 - j * 2.6}px;height:${44 - j * 2.6}px;border-radius:50%;background:rgba(228,80,47,${(0.5 - j * 0.035).toFixed(2)})"></div>`; }
       const [dx, dy] = dot(lt);
       const runK = E.out5(P(lt, 1.95, 0.25)), rg = lt > 1.95 ? Math.max(0, 1 - (lt - 1.95) / 0.3) : 0;
-      return leaks(lt) + at(0, 250, `<div style="width:${W}px;text-align:center;font:600 30px 'JetBrains Mono';letter-spacing:.16em;color:${C.signal}">${scramble("DESCRIBE THE BUSINESS YOU WANT TO BUILD", P(lt, 0.15, 0.7), 3)}</div>`) +
+      return leaks(lt) + at(0, 250, `<div style="width:${W}px;text-align:center;font:600 30px 'JetBrains Mono';letter-spacing:.16em;color:${C.signal}"><span style="opacity:${E.out(P(lt, 0.15, 0.5))}">DESCRIBE THE BUSINESS YOU WANT TO BUILD</span></div>`) +
         center(`<div style="transform:perspective(1400px) rotateX(${((1 - k) * 32).toFixed(1)}deg) translateY(${((1 - k) * 90).toFixed(0)}px) scale(${(0.9 + 0.1 * k + bump).toFixed(4)});opacity:${clamp(k * 2)}">${searchBox(typed, Math.floor(lt * 3) % 2 === 0 || lt < 1.4, pressed, 1340)}</div>`) +
         trail + (zip > 0 ? `<div style="position:absolute;left:${dx}px;top:${dy}px;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px ${C.signal},0 0 50px ${C.signal},0 0 120px rgba(228,80,47,.6)"></div>` : "") +
         burst(1474, 540, P(lt, 1.9, 0.4), C.signal, 14, 120, 60) +
-        (lt > 1.95 ? at(1250, 640, `<div style="font:800 150px Manrope;letter-spacing:-.05em;color:${C.ink};transform:scale(${lerp(1.8, 1, runK).toFixed(3)}) rotate(${((1 - runK) * -8).toFixed(1)}deg);transform-origin:left top;text-shadow:${(rg * 12).toFixed(1)}px 0 rgba(0,200,255,.55),${(-rg * 12).toFixed(1)}px 0 rgba(255,0,60,.6)">Run.</div>`) : "");
+        (lt > 1.95 ? at(1250, 640, `<div style="font:800 150px Manrope;letter-spacing:-.05em;color:${C.ink};transform:scale(${lerp(1.8, 1, runK).toFixed(3)}) rotate(${((1 - runK) * -8).toFixed(1)}deg);transform-origin:left top">Run.</div>`) : "");
     } },
   // ---- S4: a 3D fly-through tunnel of real headlines + rolling counter ----
   { a: 6.6, b: 9.0, dark: true, bg: darkBg(), op: (lt) => E.out(P(lt, 0, 0.3)), draw: (lt) => {
@@ -156,9 +156,8 @@ var SCENES = [
         const a = hash(i * 2.1) * Math.PI * 2, r = ((hash(i * 4.4) * 900 + lt * 1500) % 1100) + 80, len = 60 + r * 0.35;
         return `<div style="position:absolute;left:960px;top:520px;width:${len.toFixed(0)}px;height:2px;transform-origin:0 50%;transform:rotate(${(a * 57.3).toFixed(1)}deg) translateX(${r.toFixed(0)}px);background:linear-gradient(90deg,transparent,rgba(255,200,170,${(0.15 + hash(i) * 0.3).toFixed(2)}))"></div>`;
       }).join("");
-      const ck = P(lt, 0.1, 1.8), val = DATA.stats.sources * E.out(ck), rate = ck > 0 && ck < 1 ? DATA.stats.sources * 3 * Math.pow(1 - ck, 2) / 1.8 : 0;
-      return streaks + tunnel + `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(11,10,13,.85) 100%)"></div>` +
-        at(80, 720, `<div style="padding:30px 44px 30px;border-radius:30px;background:rgba(14,12,16,.9);border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(228,80,47,.18);opacity:${E.out(P(lt, 0, 0.3))}">` + roller(val, rate, 170) + `<div style="font:600 28px 'JetBrains Mono';color:#ff9a76;letter-spacing:.14em;margin-top:10px">${scramble("NEWS ARTICLES CITED", P(lt, 0.3, 0.7), 9)}</div></div>`) +
+            return streaks + tunnel + `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(11,10,13,.85) 100%)"></div>` +
+        at(80, 720, `<div style="padding:30px 44px 30px;border-radius:30px;background:rgba(14,12,16,.9);border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(228,80,47,.18);opacity:${E.out(P(lt, 0.2, 0.35))};transform:translateY(${((1 - E.out(P(lt, 0.2, 0.35))) * 30).toFixed(0)}px)"><div style="font:800 170px/1 'JetBrains Mono';letter-spacing:-.04em;color:${C.cream};text-shadow:0 0 40px rgba(228,80,47,.55)">${DATA.stats.sources}</div>` + `<div style="font:600 28px 'JetBrains Mono';color:#ff9a76;letter-spacing:.14em;margin-top:10px">NEWS ARTICLES CITED</div></div>`) +
         at(1290, 110, words("We _read_ / _the_ *news.*", lt, 0.2, { size: 112, color: C.cream, align: "right" })) + scanlines(0.06);
     } },
   // ---- S5: tombstones slam down — dust, debris, fog, embers, letterbox ----
@@ -185,7 +184,7 @@ var SCENES = [
       });
       const fog = `<div style="position:absolute;left:${(-400 + lt * 120).toFixed(0)}px;top:700px;width:1600px;height:420px;border-radius:50%;background:radial-gradient(ellipse, rgba(200,205,225,.16), transparent 70%);filter:blur(20px)"></div>
         <div style="position:absolute;left:${(800 - lt * 90).toFixed(0)}px;top:760px;width:1500px;height:380px;border-radius:50%;background:radial-gradient(ellipse, rgba(200,205,225,.13), transparent 70%);filter:blur(20px)"></div>`;
-      const n = Math.round(D.dead * E.out(P(lt, 1.85, 0.5)));
+      const n = D.dead;
       const box = E.out(P(lt, 0, 0.4)) * 92;
       return embers(lt + 9, "255,130,80", 50, 0.7) +
         at(0, 120, `<div style="width:${W}px;text-align:center">${words("Who _tried_ _it?_", lt, 0, { size: 100, color: C.cream })}</div>`) +
@@ -200,7 +199,7 @@ var SCENES = [
         const kk = E.out(P(lt, 0.35 + i * 0.17, 0.7)), pop = E.back(P(lt, 0.85 + i * 0.17, 0.35));
         return `<div style="margin:0 0 44px;opacity:${clamp(kk * 3)};transform:translateX(${((1 - kk) * -60).toFixed(0)}px)">
           <div style="display:flex;justify-content:space-between;align-items:flex-end;font:700 44px Manrope;color:${C.ink};margin-bottom:14px;width:1320px"><span>${esc(cap(cause))}</span>
-            <span style="display:inline-block;transform:scale(${pop.toFixed(3)});font:700 36px 'JetBrains Mono';color:#fff;background:${C.signal};padding:6px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(228,80,47,.4)">${Math.round(n * kk)} of ${D.basedOn}</span></div>
+            <span style="display:inline-block;transform:scale(${pop.toFixed(3)});font:700 36px 'JetBrains Mono';color:#fff;background:${C.signal};padding:6px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(228,80,47,.4)">${n} of ${D.basedOn}</span></div>
           <div style="height:30px;border-radius:16px;background:#e6e0d4;width:1320px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.08)">
             <div style="position:relative;height:100%;width:${((100 * n / max) * kk).toFixed(1)}%;border-radius:16px;background:linear-gradient(90deg,#8E2A12,#E4502F 70%,#F7A86E);box-shadow:0 0 22px rgba(228,80,47,.55);overflow:hidden">
               <div style="position:absolute;inset:0;background:repeating-linear-gradient(120deg, rgba(255,255,255,.18) 0 14px, transparent 14px 30px);background-position:${(lt * 90).toFixed(0)}px 0"></div>
@@ -223,7 +222,7 @@ var SCENES = [
       }).join("");
       const lock = lt > 1.8 ? Math.exp(-(lt - 1.8) * 4) : 0;
       return leaks(lt + 13, 0.8) + rays(lt, cx, cy, 1500, "rgba(232,162,58,.13)", 10) + ticks + sparks +
-        at(cx - 300, cy - 300, `<div style="transform:scale(${(1 + lock * 0.05).toFixed(3)});filter:drop-shadow(0 0 ${(lock * 40).toFixed(0)}px rgba(232,162,58,.8))">${ring(D.risk, D.label, k, 600)}</div>`) +
+        at(cx - 300, cy - 300, `<div style="transform:scale(${(1 + lock * 0.05).toFixed(3)});filter:drop-shadow(0 0 ${(lock * 40).toFixed(0)}px rgba(232,162,58,.8))">${ring(D.risk, D.label, k, 600).replace(/>\d+<\/div>/, `>${D.risk}</div>`)}</div>`) +
         at(200, 300, words("Your _risk,_ / *scored.*", lt, 0, { size: 132, align: "left" })) +
         at(200, 650, `<div style="font:600 36px 'JetBrains Mono';color:${C.grey}">“${esc(IDEA.slice(0, Math.floor(clamp((lt - 0.5) / 0.7) * IDEA.length)))}${lt < 1.3 && Math.floor(lt * 6) % 2 ? "▍" : ""}”</div>`);
     } },
@@ -262,7 +261,7 @@ var SCENES = [
     } },
   // ---- S10: rapid slogans, one per beat ----
   { a: 21.0, b: 21.6, dark: true, bg: `background:#0b0a0d`, draw: (lt) => { const k = E.out5(P(lt, 0, 0.22)); return rays(lt, 960, 540, 1800, "rgba(255,255,255,.05)", 30) + center(`<div style="font:800 180px Manrope;letter-spacing:-.05em;color:${C.cream};transform:scale(${lerp(1.9, 1, k).toFixed(3)});filter:blur(${((1 - k) * 20).toFixed(1)}px)">No source,</div>`); } },
-  { a: 21.6, b: 22.2, dark: true, bg: `background:#0b0a0d`, draw: (lt) => { const k = E.out5(P(lt, 0, 0.2)), g = Math.max(0, 1 - lt / 0.3) * 0.8; return center(glitch(`<div style="font:800 180px Manrope;letter-spacing:-.05em;color:${C.signal};text-shadow:0 0 50px rgba(228,80,47,.6);transform:scale(${lerp(1.5, 1, k).toFixed(3)})">no company.</div>`, g, Math.floor(lt * 30) + 5)); } },
+  { a: 21.6, b: 22.2, dark: true, bg: `background:#0b0a0d`, draw: (lt) => { const k = E.out5(P(lt, 0, 0.2)), g = Math.max(0, 1 - lt / 0.3) * 0.8; return center(`<div style="font:800 180px Manrope;letter-spacing:-.05em;color:${C.signal};text-shadow:0 0 50px rgba(228,80,47,.6);transform:scale(${lerp(1.5, 1, k).toFixed(3)})">no company.</div>`); } },
   { a: 22.2, b: 22.8, draw: (lt) => center(`<div style="font:800 180px Manrope;letter-spacing:-.05em;white-space:nowrap">${[..."Nothing made up."].map((ch, i) => { const k = E.back(P(lt, i * 0.016, 0.22)); return `<span style="display:inline-block;transform:translateY(${((1 - k) * -160).toFixed(0)}px);opacity:${clamp(k * 3)}">${ch === " " ? "&nbsp;" : esc(ch)}</span>`; }).join("")}</div>`) },
   { a: 22.8, b: 23.55, bg: bgOrange, draw: (lt) => { const k = E.back(P(lt, 0, 0.3)); return rays(lt, 960, 540, 2200, "rgba(255,255,255,.14)", 40) + center(`<div style="font:800 260px Manrope;letter-spacing:-.06em;color:#fff;transform:scale(${lerp(0.4, 1, k).toFixed(3)});text-shadow:0 20px 60px rgba(120,30,10,.35)">Free.</div>`) + confetti(lt - 0.05, 960, 540, 80); } },
   // ---- S11: the end card — rays, logo build, shine sweep, cursor click, green heartbeat ----
@@ -283,13 +282,13 @@ var SCENES = [
 ];
 
 // ---------- sound + post-effect cues ----------
-cue(2.4 + 0.42, "glitch"); cue(2.4 + 0.42, "braam", { ca: 0.8, wave: [960, 470, "#E4502F"] });
+cue(2.4 + 0.42, "braam", { wave: [960, 470, "#E4502F"] });
 cue(2.4 + 1.0, "shine");
-cue(4.15, "swoosh", { up: 1 }); cue(4.2 + 0.15, "data");
+cue(4.15, "swoosh", { up: 1 }); 
 for (let i = 0; i < IDEA.length; i++) cue(4.2 + 0.35 + (i / IDEA.length) * 1.0, "key");
-cue(4.2 + 1.45, "zip"); cue(4.2 + 1.9, "click"); cue(4.2 + 1.95, "slam", { shake: 12, ca: 1, flash: "#ffffff", wave: [1474, 540, "#E4502F"] });
+cue(4.2 + 1.45, "zip"); cue(4.2 + 1.9, "click"); cue(4.2 + 1.95, "slam", { shake: 12, flash: "#ffffff", wave: [1474, 540, "#E4502F"] });
 cue(6.6, "reverse", { len: 0.6 }); cue(6.6, "drop", { shake: 6, flash: "#E4502F" });
-cue(6.6 + 0.1, "datarun", { len: 1.8 });
+
 for (let i = 0; i < 9; i++) cue(6.75 + i * 0.25, "pass", { pan: i % 2 ? 0.6 : -0.6 });
 dead.forEach((c, i) => cue(9.0 + 0.15 + i * 0.22 + 0.3, "stone", { shake: 7 }));
 cue(9.0 + 1.85, "hit");
@@ -298,10 +297,10 @@ cue(13.8, "swoosh"); cue(14.1, "riser", { len: 1.5 }); cue(15.6, "lock", { wave:
 cue(16.2, "swoosh"); [0, 1, 2].forEach((i) => { cue(16.2 + 0.3 + i * 0.32, "flip"); cue(16.2 + 0.62 + i * 0.32, "stamp", { shake: 4 }); });
 cue(18.6, "swoosh"); [0, 1, 2, 3].forEach((i) => { cue(18.6 + 0.35 + i * 0.2, "zap"); cue(18.6 + 0.85 + i * 0.2, "ding"); });
 cue(21.0, "reverse", { len: 0.6 });
-cue(21.0, "slam", { shake: 8, ca: 1, flash: "#ffffff", wave: [960, 540, "#ffffff"] });
-cue(21.6, "slam", { shake: 8, ca: 1 }); cue(21.6, "glitch");
+cue(21.0, "slam", { shake: 8, flash: "#ffffff", wave: [960, 540, "#ffffff"] });
+cue(21.6, "slam", { shake: 8 });
 cue(22.2, "slam", { shake: 7, flash: "#161616" });
-cue(22.8, "boom", { shake: 14, ca: 0.8, flash: "#ffffff", wave: [960, 540, "#ffffff"] }); cue(22.85, "sparkle");
+cue(22.8, "boom", { shake: 14, flash: "#ffffff", wave: [960, 540, "#ffffff"] }); cue(22.85, "sparkle");
 cue(23.4, "swoosh", { up: 1 }); cue(23.6, "chime"); cue(23.4 + 1.7, "shine"); cue(23.4 + 3.6, "click");
 cue(23.4 + 0.2 + 3.2 * 0.66, "heart"); cue(23.4 + 0.2 + 3.2 * 0.68, "beep", { f: 1318 });
 
