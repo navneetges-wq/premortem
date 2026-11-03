@@ -228,79 +228,95 @@ for c in spec["cues"]:
     pan = c.get("pan", {"key": rng.uniform(-0.25, 0.25), "stone": rng.uniform(-0.35, 0.35), "zap": rng.uniform(-0.4, 0.4), "ding": rng.uniform(-0.3, 0.3), "flip": rng.uniform(-0.3, 0.3)}.get(s, 0.0))
     fx(sig, start, GAIN.get(s, 0.7), pan, SEND.get(s, 0.2))
 
-# ---------- music ----------
+# ---------- music: a warm cinematic "heartbeat" score ----------
+# The pulse is a soft heartbeat (lub-dub) instead of drums, under felt piano, warm pads and a sine sub-bass.
 ROOT = 55.0                                     # A1
 CHORDS = {"min": [[0, 3, 7], [-4, 0, 3], [3, 7, 10], [-2, 2, 5]],      # Am F C G
           "dark": [[0, 3, 7], [0, 3, 7], [-4, 0, 3], [-5, -1, 2]],     # Am Am F E
           "maj": [[-4, 0, 3], [3, 7, 10], [-2, 2, 5], [3, 7, 10]]}     # F C G C
+MELODY = [12, 10, 7, 3, 7, 5, 3, 0]                                     # a gentle falling line for the outro (semitones above A3)
 def section(t):
     for m in MUSIC:
-        if m["a"] <= t < m["b"]: return m["kind"]
+        if m["a"] <= t < m["b"]: return m
     return None
-def kick():
-    d = 0.4; n = int(d * SR); return np.tanh(sine_glide(d, 150, 45, 30) * env(n, 0.001, 0.16) * 1.8 + hpf(noise(d), 3000) * env(n, 0.0003, 0.003) * 0.3)
-def snare():
-    d = 0.35; n = int(d * SR); t = T(d)
-    return (bpf(noise(d), 2200, 0.7) * env(n, 0.001, 0.07) * 0.9 + np.sin(2 * np.pi * 190 * t) * env(n, 0.001, 0.05) * 0.5) * 0.8
-def hat(open_=False):
-    d = 0.25 if open_ else 0.06; n = int(d * SR); return hpf(noise(d), 7000) * env(n, 0.0005, 0.06 if open_ else 0.012) * 0.35
-def bass_note(f, d, bright=600):
-    t = T(d); s = saw(f, t) * 0.6 + np.sin(2 * np.pi * f * t) * 0.6
-    return np.tanh(lpf(s, bright) * 1.5) * adsr(len(t), 0.005, 0.05) * 0.5
-def pluck(f, d=0.25, bright=3000):
-    t = T(d); s = saw(f, t) * 0.5 + np.sign(np.sin(2 * np.pi * f * 1.003 * t)) * 0.25
-    return lpf(s, bright) * env(len(t), 0.002, 0.09) * 0.3
-def pad(freqs, d, bright=1400):
+def hz(semi, octave=3): return 55.0 * 2 ** (octave - 1) * 2 ** (semi / 12)    # octave 3 → A3 = 220 Hz
+def piano(f, d=1.6, vel=1.0):
+    t = T(d); s = np.zeros(len(t))
+    for h, g in ((1, 1.0), (2, 0.42), (3, 0.2), (4, 0.1), (5, 0.05)):
+        fh = f * h * (1 + 0.0004 * h * h)
+        s += np.sin(2 * np.pi * fh * t) * g * np.exp(-t * (1.6 + h * 1.1))
+    hammer = lpf(noise(0.02), 1800) * env(int(0.02 * SR), 0.0005, 0.004) * 0.08
+    s[: len(hammer)] += hammer
+    s = lpf(s, 2600) * np.minimum(1, t / 0.006) * np.minimum(1, (d - t) / 0.08)
+    return s * 0.16 * vel
+def warm_pad(freqs, d, bright=900):
     t = T(d); s = np.zeros(len(t))
     for f in freqs:
-        for det in (-0.4, 0.4): s += saw(f + det, t + rng.uniform(0, 1))
-    return lpf(s, bright) * adsr(len(t), min(0.4, d / 3), min(0.5, d / 3)) * 0.05
+        for det in (-0.25, 0.25):
+            ph = rng.uniform(0, 6.28)
+            s += np.sin(2 * np.pi * (f + det) * t + ph) * 0.7 + np.sin(2 * np.pi * 2 * (f + det) * t + ph) * 0.18
+    return lpf(s, bright) * adsr(len(t), min(0.7, d / 3), min(0.8, d / 3)) * 0.035
+def sub(f, d):
+    t = T(d); return np.sin(2 * np.pi * f * t) * adsr(len(t), 0.03, 0.15) * 0.28
+def hb():                                                                # soft heartbeat kick (lub-dub)
+    out = np.zeros(int(0.5 * SR))
+    for off, g, f in ((0, 1.0, 58), (0.16, 0.6, 50)):
+        put(out, sine_glide(0.28, f * 1.6, f, 20) * env(int(0.28 * SR), 0.006, 0.08) * g, off)
+    return lpf(out, 260) * 0.75
+def shaker():
+    d = 0.09; n = int(d * SR); return bpf(noise(d), 6500, 1.2) * adsr(n, 0.02, 0.06) * 0.07
+def tom():
+    d = 1.4; n = int(d * SR); return lpf(sine_glide(d, 95, 62, 5) * env(n, 0.004, 0.45) + lpf(noise(d), 250) * env(n, 0.002, 0.05) * 0.4, 400) * 0.55
 
 nbeats = int(spec["duration"] / BEAT) + 1
-k_, s_ = kick(), snare()
+HB = hb()
 for b in range(nbeats):
-    tb = b * BEAT; kind = section(tb + 0.001)
-    if kind is None: continue
-    bar = b // 4; pos = b % 4
+    tb = b * BEAT; m = section(tb + 0.001)
+    if m is None: continue
+    kind = m["kind"]; bar = b // 4; pos = b % 4
+    u = (tb - m["a"]) / max(0.01, m["b"] - m["a"])
     prog = CHORDS["dark" if kind == "dark" else "maj" if kind == "outro" else "min"][bar % 4]
     root = ROOT * 2 ** (prog[0] / 12)
-    secA = next(m for m in MUSIC if m["kind"] == kind and m["a"] <= tb < m["b"])
-    u = (tb - secA["a"]) / max(0.01, secA["b"] - secA["a"])            # progress through the section
+    chord = [hz(s, 3) for s in prog]
     if kind == "intro":
-        continue
+        if b == 0: put(musRev, warm_pad([hz(0, 2), hz(7, 2)], 2.4, 500), 0.0, 0.8)
     if kind == "tension":
-        for h in (0, 0.5): put(mus, bass_note(root, BEAT * 0.45, 300), tb + h * BEAT, 0.8)
-        put(mus, hat() * 0.6, tb + 0.5 * BEAT)
+        if pos == 0 or b == int(m["a"] / BEAT):
+            put(mus, warm_pad([hz(0, 2), hz(3, 3), hz(7, 3)], BEAT * 3, 600), tb, 1.0); put(musRev, warm_pad([hz(0, 2), hz(7, 3)], BEAT * 3, 600), tb, 0.6)
+        put(mus, sub(root, BEAT * 0.9), tb, 0.8)
+        if pos in (0, 2): put(mus, piano(hz(0, 2), 2.0, 0.7), tb); put(musRev, piano(hz(0, 2), 2.0, 0.7), tb, 0.6)
     if kind == "build":
-        bright = 500 + 5000 * u ** 2
-        for q in range(4):
-            semi = prog[q % 3] + (12 if q == 3 else 0)
-            put(mus, pluck(ROOT * 4 * 2 ** (semi / 12), 0.2, bright), tb + q * BEAT / 4, 0.9)
-            put(mus, hat() * (0.4 + 0.6 * u), tb + q * BEAT / 4)
-        put(mus, bass_note(root, BEAT * 0.9, 400), tb, 0.8)
-        if u > 0.6:                                                    # snare roll into the drop
-            n = 2 if u < 0.8 else 4
-            for q in range(n): put(mus, s_ * (0.3 + 0.7 * u), tb + q * BEAT / n, 0.8)
+        # repeated piano note gets louder, heartbeat speeds up, strings swell underneath
+        for q in range(2):
+            put(mus, piano(hz(0, 3) if q == 0 else hz(12, 3), 0.7, 0.45 + 0.6 * u), tb + q * BEAT / 2); put(musRev, piano(hz(0, 3), 0.7, 0.5), tb + q * BEAT / 2, 0.4)
+        n = 1 if u < 0.5 else 2
+        for q in range(n): put(mus, HB, tb + q * BEAT / n, 0.6 + 0.4 * u)
+        if pos == 0: put(mus, warm_pad(chord + [hz(0, 2)], BEAT * 4, 500 + 1500 * u), tb, 0.8 + 0.8 * u)
+        put(mus, sub(root, BEAT * 0.9), tb, 0.7)
     if kind in ("groove", "dark", "outro"):
         dark = kind == "dark"; out = kind == "outro"
-        if pos in (0,) or (pos == 2 and not dark) or (pos == 1 and not dark and not out and b % 2): put(mus, k_, tb, 0.95 if not out else 0.6)
-        if pos == 2 and not dark: put(mus, s_, tb, 0.9 if not out else 0.5)
-        if dark and pos == 2: put(mus, k_, tb + BEAT * 0.5, 0.7)
-        for q in range(2 if dark else 4): put(mus, hat(q == 2 and not dark) * (0.5 if q % 2 else 0.8), tb + q * BEAT / (2 if dark else 4), 0.8 if not out else 0.5)
-        put(mus, bass_note(root, BEAT * 0.48, 300 if dark else 700), tb + BEAT * 0.5, 0.9)
-        put(mus, bass_note(root, BEAT * 0.45, 300 if dark else 700), tb, 0.7)
+        # heartbeat pulse on beats 1 and 3
+        if pos in (0, 2) and not dark: put(mus, HB, tb, 0.55 if out else 0.85)
+        if dark and pos == 0: put(mus, tom(), tb, 0.9)
+        if not dark and not out: put(mus, shaker(), tb + BEAT * 0.5, 1.0)
+        if pos in (0, 2): put(mus, sub(root, BEAT * 1.9), tb, 0.7 if dark else 0.9)
         if pos == 0:
-            freqs = [ROOT * 4 * 2 ** (s / 12) for s in prog] + [ROOT * 8 * 2 ** (prog[0] / 12)]
-            put(mus, pad(freqs, BEAT * 4, 700 if dark else 1800 if out else 1300), tb, 1.4 if out else 1.0)
-            put(musRev, pad(freqs, BEAT * 4, 900), tb, 0.6)
-        if not dark:
-            for q in range(4):
-                semi = prog[(q + pos) % 3] + 12 * ((q + b) % 2)
-                put(mus, pluck(ROOT * 4 * 2 ** (semi / 12), 0.18, 2500 if not out else 4000), tb + q * BEAT / 4, 0.45 if not out else 0.6)
-                if out: put(musRev, pluck(ROOT * 4 * 2 ** (semi / 12), 0.18, 4000), tb + q * BEAT / 4, 0.4)
+            put(mus, warm_pad(chord + [hz(prog[0], 2)], BEAT * 4, 600 if dark else 1100 if out else 900), tb, 1.0)
+            put(musRev, warm_pad(chord, BEAT * 4, 900), tb, 0.7)
+        if dark:
+            if pos == 0: put(mus, piano(hz(prog[0], 2), 2.4, 0.8), tb); put(musRev, piano(hz(prog[0], 2), 2.4, 0.8), tb, 0.8)
+        elif out:
+            if pos == 0:
+                for j, f in enumerate(chord): put(mus, piano(f, 2.4, 0.55), tb + j * 0.03); put(musRev, piano(f, 2.4, 0.5), tb + j * 0.03, 0.6)
+            note = MELODY[(b - int(m["a"] / BEAT)) % len(MELODY)]
+            put(mus, piano(hz(note, 4), 1.6, 0.5), tb + BEAT * 0.5); put(musRev, piano(hz(note, 4), 1.6, 0.5), tb + BEAT * 0.5, 0.7)
+        else:
+            # broken chord: root, fifth, third an octave up — one note per beat, soft
+            pat = [prog[0], prog[2], prog[1] + 12, prog[2]]
+            f = hz(pat[pos], 3); put(mus, piano(f, 1.4, 0.5), tb); put(musRev, piano(f, 1.4, 0.5), tb, 0.5)
     if kind == "lift":
-        put(mus, bass_note(root, BEAT * 0.9, 900), tb, 0.6)
-        for q in range(4): put(mus, s_ * (0.4 + 0.15 * q), tb + q * BEAT / 4, 0.7)
+        if b == int(m["a"] / BEAT): put(mus, warm_pad(chord + [hz(12, 3)], 0.6 + BEAT, 2500), tb, 1.6)
+        put(mus, HB, tb, 0.8); put(mus, HB, tb + BEAT / 2, 0.8)
     # "stop": silence — only the slogan hits
 
 # intro drone under the opening (the "drone" cue adds the rest)
@@ -326,8 +342,8 @@ def conv(x, h):
 hL, hR = ir(1), ir(2)
 wetL = conv(revL + musRev * 0.5, hL) * 0.55; wetR = conv(revR + musRev * 0.5, hR) * 0.55
 
-L = dryL + mus * 0.68 + wetL
-R = dryR + mus * 0.68 + wetR
+L = dryL + mus * 0.8 + wetL
+R = dryR + mus * 0.8 + wetR
 mix = np.stack([L, R], 1)
 mix = hpf(mix[:, 0], 28)[:, None] * np.array([1, 0]) + hpf(mix[:, 1], 28)[:, None] * np.array([0, 1])
 mix = np.tanh(mix * 1.25) / np.tanh(1.25)
