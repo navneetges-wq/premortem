@@ -319,7 +319,7 @@ requestAnimationFrame(tickerLoop);
 })();
 
 // ---------- the 30-second film ----------
-// Nothing downloads until the visitor scrolls near it; then it buffers so "Play" starts at once.
+// Nothing downloads until the visitor scrolls to it; then it buffers so "Play" starts at once.
 // Safari/iPhone need byte-range requests, which our host doesn't do, so they get the GitHub Pages copy;
 // every other browser gets the (faster) copy on our own site, falling back to GitHub if it fails.
 (() => {
@@ -332,7 +332,7 @@ requestAnimationFrame(tickerLoop);
     if (chosen !== v.dataset.gh) { const wasPlaying = box.classList.contains("playing"); chosen = v.dataset.gh; v.src = chosen; v.load(); if (wasPlaying) v.play().catch(() => {}); }
   });
   if ("IntersectionObserver" in window) {
-    const near = new IntersectionObserver((e) => { if (e[0].isIntersecting) { near.disconnect(); arm(); } }, { rootMargin: "500px 0px" });
+    const near = new IntersectionObserver((e) => { if (e[0].isIntersecting) { near.disconnect(); arm(); } }, { threshold: 0.2 });
     near.observe(v);
     new IntersectionObserver((e) => { if (!e[0].isIntersecting && !v.paused) v.pause(); }, { threshold: 0.15 }).observe(v);
   }
