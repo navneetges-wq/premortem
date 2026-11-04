@@ -20,6 +20,7 @@ const SMALL_MODEL = "gemma-4-31b-it"; // small free model for sorting headlines 
 
 // ---------- prefill ----------
 async function prefill(params = {}) {
+  if (store.readOnly()) return ["Paused: reading from the snapshot (Catalyst's free monthly Data Store reads are used up)."];
   // A manual run can ask for more types and a lower reserve (e.g. ?count=5&reserve=250); nightly runs use the defaults.
   const count = Math.min(8, Math.max(1, Number(params.count) || PREFILL_PER_NIGHT));
   const reserve = Math.max(150, Number(params.reserve) || PREFILL_RESERVE);
@@ -59,6 +60,7 @@ const pageText = (html) =>
   html.replace(/<(script|style|nav|header|footer)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
 
 async function news() {
+  if (store.readOnly()) return ["Paused: reading from the snapshot (Catalyst's free monthly Data Store reads are used up)."];
   // 1. Collect headlines from the last 2 days.
   const items = [];
   for (const feed of FEEDS) {
@@ -128,6 +130,7 @@ ${items.map((it, i) => `[${i + 1}] ${it.title} — ${it.summary}`).join("\n")}`;
 
 // ---------- recheck ----------
 async function recheck() {
+  if (store.readOnly()) return ["Paused: reading from the snapshot (Catalyst's free monthly Data Store reads are used up)."];
   const start = Date.now();
   const running = (await store.allCompanies())
     .filter((c) => c.status === "running")
@@ -156,6 +159,7 @@ async function recheck() {
 
 // ---------- premortems: rebuild every saved "How your idea could fail" (after we change how it's made) ----------
 async function premortems() {
+  if (store.readOnly()) return ["Paused: reading from the snapshot (Catalyst's free monthly Data Store reads are used up)."];
   const log = [];
   for (const r of await store.allNiches()) {
     try {
@@ -174,6 +178,7 @@ async function premortems() {
 const ACQ_CHECKS = 40;               // at most 40 searches per run
 const ACQ_BUDGET_MS = 9 * 60000;     // leave room to rebuild premortems before the 15-minute limit
 async function acquisitions(params = {}) {
+  if (store.readOnly()) return ["Paused: reading from the snapshot (Catalyst's free monthly Data Store reads are used up)."];
   const start = Date.now(), log = [], touched = new Set();
   const byNiche = new Map();
   for (const c of await store.allCompanies()) if (c.status === "running" && (!params.niche || c._niche === params.niche)) { if (!byNiche.has(c._niche)) byNiche.set(c._niche, []); byNiche.get(c._niche).push(c); }
@@ -228,6 +233,7 @@ ${group.map((c) => `- ${c.name}`).join("\n")}`, { type: "OBJECT", properties: { 
 
 // ---------- fix: correct one company's status by hand, then rebuild that business type's premortem ----------
 async function fix({ niche, name, status } = {}) {
+  if (store.readOnly()) return ["Paused: reading from the snapshot (Catalyst's free monthly Data Store reads are used up)."];
   if (!niche || !name || !["running", "shut down", "acquired"].includes(status)) return ["Need niche, name and status (running, shut down or acquired)."];
   if (!(await store.setStatus(niche, name, status, find.simpleName))) return [`${name}: not found in ${niche}`];
   await refreshPremortem(niche, niche);

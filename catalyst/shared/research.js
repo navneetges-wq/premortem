@@ -8,7 +8,8 @@ const store = require("./store");
 const headline = (t) => String(t || "").split(/\s[|–-]\s/)[0].trim().slice(0, 90);
 
 // feed(): optional — passes real headlines and company names to the loading screen as we go.
-async function researchNiche(idea, niche, searches, progress = async () => {}, feed = async () => {}) {
+async function researchNiche(idea, niche, searches, progress = async () => {
+  if (store.readOnly()) return "Paused: reading from the snapshot — new research is off for now.";}, feed = async () => {}) {
   await progress(`Searching the web (${searches.length} searches)…`);
   const articles = await find.collectArticles(searches);
 

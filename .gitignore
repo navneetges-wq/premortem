@@ -14,6 +14,7 @@ catalyst/functions/*/niches.js
 catalyst/functions/*/store.js
 catalyst/functions/*/research.js
 catalyst/functions/*/nightly.js
+catalyst/functions/*/snapshot.json
 # video build leftovers
 promo/encode
 promo/frames*/
@@ -25,3 +26,6 @@ promo/render*.log
 
 # Conductor: personal overrides
 .conductor/settings.local.toml
+
+# raw table exports (rebuild snapshot from these)
+data-export/

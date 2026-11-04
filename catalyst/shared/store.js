@@ -4,6 +4,21 @@
 // searches:  one row per search someone makes (idea, niche, state, progress)
 
 const { Datastore } = require("@zcatalyst/datastore");
+const fs = require("fs");
+const path = require("path");
+
+// ---------- read-only snapshot mode ----------
+// Catalyst's free plan allows only 10,000 Data Store reads a month. When snapshot.json ships with the code (an export
+// made with Catalyst "bulk read"), every READ below comes from that file instead — unlimited and instant — and new
+// research is paused (it would need to read the Data Store). Delete snapshot.json to go back to live reads.
+let SNAP;
+function snap() {
+  if (SNAP === undefined) {
+    try { SNAP = JSON.parse(fs.readFileSync(path.join(__dirname, "snapshot.json"), "utf8")); } catch { SNAP = null; }
+  }
+  return SNAP;
+}
+const readOnly = () => !!snap();
 
 const MAX_TEXT = 9900; // Catalyst "Text" columns hold up to 10,000 characters
 
@@ -30,12 +45,14 @@ function fitText(obj) {
 
 // ---------- companies ----------
 async function companiesFor(niche) {
+  if (snap()) return snap().companies.filter((r) => r.niche === niche).map((r) => ({ ...r.details, _rowid: r.ROWID }));
   const rows = await allRows(tables().companies);
   return rows.filter((r) => r.niche === niche).map((r) => ({ ...JSON.parse(r.details || "{}"), _rowid: r.ROWID }));
 }
 
 // Every saved company across all business types (used by the monthly re-check).
 async function allCompanies() {
+  if (snap()) return snap().companies.map((r) => ({ ...r.details, _rowid: r.ROWID, _niche: r.niche }));
   return (await allRows(tables().companies)).map((r) => ({ ...JSON.parse(r.details || "{}"), _rowid: r.ROWID, _niche: r.niche }));
 }
 
@@ -83,9 +100,10 @@ async function setStatus(niche, name, status, simpleName) {
 const pickStatus = (c) => ({ status: c.status, status_year: c.status_year, causes: c.causes, risks_handled: c.risks_handled, one_line: c.one_line, reasons: c.reasons });
 
 // ---------- niches ----------
-const allNiches = () => allRows(tables().niches);
+const allNiches = async () => (snap() ? snap().niches.map((r) => ({ ...r })) : allRows(tables().niches));
 
 async function nicheRow(niche) {
+  if (snap()) return snap().niches.find((r) => r.niche === niche) || null;
   return (await allRows(tables().niches)).find((r) => r.niche === niche) || null;
 }
 
@@ -132,6 +150,7 @@ const getSearch = (id) => tables().searches.getRow(id);
 
 // Was this exact idea researched in the last few days? (so we don't search for it again and again)
 async function recentSearchFor(idea, days) {
+  if (snap()) return true; // no research while reading from the snapshot
   const key = idea.trim().toLowerCase();
   return (await allRows(tables().searches)).some((r) => {
     if (String(r.idea || "").trim().toLowerCase() !== key || r.state === "failed") return false;
@@ -143,4 +162,4 @@ async function recentSearchFor(idea, days) {
   });
 }
 
-module.exports = { setStatus, companiesFor, allCompanies, mergeCompanies, allNiches, nicheRow, saveNiche, newSearch, updateSearch, getSearch, recentSearchFor, saveMistake, allMistakes, addSubscriber, allSubscribers };
+module.exports = { readOnly, setStatus, companiesFor, allCompanies, mergeCompanies, allNiches, nicheRow, saveNiche, newSearch, updateSearch, getSearch, recentSearchFor, saveMistake, allMistakes, addSubscriber, allSubscribers };
