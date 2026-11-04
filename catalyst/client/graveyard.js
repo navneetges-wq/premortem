@@ -14,6 +14,13 @@ const API = location.hostname.endsWith("catalystserverless.in")
   ? "/server/api"
   : "https://whotriedit-60093906253.development.catalystserverless.in/server/api";
 
+// The headline numbers ("2,005 companies tracked") — fetched first, so they show even if 3D fails on this device.
+let stats = null;
+fetch(API + "/stats").then((r) => r.json()).then((d) => {
+  stats = d;
+  for (const el of document.querySelectorAll(".g-count [data-key]")) el.textContent = (d[el.dataset.key] || 0).toLocaleString("en-IN");
+}).catch(() => {});
+
 const TOUCH = matchMedia("(pointer: coarse)").matches;
 const STILL = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NARROW = () => innerWidth < 760;
@@ -506,8 +513,7 @@ function start() {
       }
     }
   }
-  let stats = null;
-  fetch(API + "/stats").then((r) => r.json()).then((d) => { stats = d; }).catch(() => {});
+  // (stats are fetched at the top of the file, before the 3D scene starts)
 
   // ---------- bloom (glow) for the night, desktop only ----------
   let composer = null, bloom = null;
@@ -604,15 +610,9 @@ function start() {
       el.style.setProperty("--y", `${((1 - v) * (vIn < 1 ? 28 : -28)).toFixed(1)}px`);
       el.classList.toggle("live", v > 0.6);
     }
-    if (stats && !counted && p > 0.24) {
-      counted = true; const t0 = performance.now();
-      const els = [...document.querySelectorAll(".g-count [data-key]")];
-      const tick = (now) => {
-        const t = clamp((now - t0) / 1800);
-        for (const el of els) el.textContent = Math.round((stats[el.dataset.key] || 0) * ease(t)).toLocaleString("en-IN");
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
+    if (stats && !counted) {                     // show the real numbers as soon as they arrive (no count-up)
+      counted = true;
+      for (const el of document.querySelectorAll(".g-count [data-key]")) el.textContent = (stats[el.dataset.key] || 0).toLocaleString("en-IN");
     }
     // which cause of death is lit up right now (#1, #2, #3 as you walk)
     const ci = p < 0.5 || p > 0.83 ? -1 : p < 0.61 ? 0 : p < 0.72 ? 1 : 2;

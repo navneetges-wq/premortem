@@ -19,7 +19,10 @@ const FEEDS = ["https://inc42.com/feed/", "https://yourstory.com/feed"];
 const SMALL_MODEL = "gemma-4-31b-it"; // small free model for sorting headlines (falls back to Flash-Lite)
 
 // ---------- prefill ----------
-async function prefill() {
+async function prefill(params = {}) {
+  // A manual run can ask for more types and a lower reserve (e.g. ?count=5&reserve=250); nightly runs use the defaults.
+  const count = Math.min(8, Math.max(1, Number(params.count) || PREFILL_PER_NIGHT));
+  const reserve = Math.max(150, Number(params.reserve) || PREFILL_RESERVE);
   const start = Date.now();
   const done = new Map((await store.allNiches()).map((r) => [r.niche, r.last_run]));
   const never = find.NICHES.map((n) => n.name).filter((n) => n !== "other" && !done.has(n));
@@ -27,13 +30,13 @@ async function prefill() {
     .filter(([, last]) => (Date.now() - new Date(last)) / 86400000 > REFRESH_AFTER_DAYS)
     .sort((a, b) => new Date(a[1]) - new Date(b[1]))
     .map(([n]) => n);
-  const todo = [...never, ...old].slice(0, PREFILL_PER_NIGHT);
+  const todo = [...never, ...old].slice(0, count);
 
   const log = [];
   for (const niche of todo) {
     if (Date.now() - start > TIME_BUDGET_MS) break;
-    if ((await find.tavilyCreditsLeft()) < PREFILL_RESERVE + 6) {
-      log.push(`Stopped: fewer than ${PREFILL_RESERVE} search credits left this month (kept for visitors).`);
+    if ((await find.tavilyCreditsLeft()) < reserve + 6) {
+      log.push(`Stopped: fewer than ${reserve} search credits left this month (kept for visitors).`);
       break;
     }
     try {
@@ -43,6 +46,7 @@ async function prefill() {
       log.push(`${niche}: failed (${err.message})`);
     }
   }
+  log.push(`Left to research: ${Math.max(0, never.length - todo.length)} business types never researched.`);
   return log;
 }
 

@@ -669,3 +669,16 @@ body.night-mode .remaining { flex: none; background: none; border: 0; padding: 0
 .ev-src i { position: absolute; right: 10px; top: 10px; font-style: normal; color: var(--faint); }
 .panel .ev-note { margin: 10px 0 0; font: 500 11px/1.5 var(--mono); color: var(--faint); }
 @media (max-width: 520px) { .ev-board { grid-template-columns: 1fr; gap: 14px; } .ev-threads { display: none; } }
+
+/* PageSense cookie notice: brand colours everywhere, and a small floating card on phones */
+#zcb-banner.zcb-bar { background: rgba(22, 22, 22, .95) !important; }
+#zcb-banner .zcb-button { border-radius: 999px !important; font-weight: 700 !important; }
+#zcb-banner .zcb-button-primary { background: #E4502F !important; border-color: #E4502F !important; color: #fff !important; }
+#zcb-banner .zcb-button-secondary { background: transparent !important; color: #F4F1EA !important; border: 1px solid rgba(244, 241, 234, .35) !important; }
+@media (max-width: 640px) {
+  #zcb-banner.zcb-bar { left: 10px !important; right: 10px !important; bottom: 10px !important; width: auto !important; border-radius: 14px !important; padding: 0 !important; box-shadow: 0 12px 30px rgba(0, 0, 0, .3) !important; }
+  #zcb-banner #zcb-info.zcb-message-bar { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 10px !important; padding: 10px 12px !important; margin: 0 !important; width: auto !important; }
+  #zcb-banner #zcb-info .zcb-msg { display: block !important; width: auto !important; max-width: none !important; flex: 1 1 auto !important; font-size: 11px !important; line-height: 1.35 !important; margin: 0 !important; padding: 0 !important; text-align: left !important; }
+  #zcb-banner #zcb-info .zcb-btn { width: auto !important; display: flex !important; flex-direction: column !important; gap: 6px !important; flex: none !important; margin: 0 !important; }
+  #zcb-banner .zcb-button { padding: 6px 14px !important; font-size: 12px !important; margin: 0 !important; text-align: center !important; line-height: 1.2 !important; }
+}

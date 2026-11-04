@@ -327,3 +327,6 @@ body.film-on #ink { display: none; }
   .l-film-play small { display: none; }
   .l-film-tri { width: 28px; height: 28px; } .l-film-tri::after { left: 11px; top: 8px; border-width: 6px 0 6px 9px; }
 }
+
+/* phones: the how-it-works box is not pinned, so it must not be pushed down */
+@media (max-width: 760px) { .l-pin > section { top: 0; } }

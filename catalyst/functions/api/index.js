@@ -306,7 +306,7 @@ module.exports = async (req, res) => {
         const task = url.searchParams.get("task");
         if (!["prefill", "news", "recheck", "premortems", "acquisitions", "fix"].includes(task)) return send(res, 400, { error: "task must be prefill, news, recheck, premortems, acquisitions or fix" });
         const job = jobFor(task);
-        for (const k of ["niche", "name", "status"]) if (url.searchParams.get(k)) job.params[k] = url.searchParams.get(k);
+        for (const k of ["niche", "name", "status", "count", "reserve"]) if (url.searchParams.get(k)) job.params[k] = url.searchParams.get(k);
         return send(res, 200, await jobs.JOB.submitJob(job));
       }
 
