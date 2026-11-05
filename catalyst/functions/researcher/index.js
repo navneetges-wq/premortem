@@ -16,16 +16,21 @@ module.exports = async (jobRequest, context) => {
   try {
     if (task === "research") {
       const { search_id: searchId, idea, niche } = params;
-      const progress = (text) => store.updateSearch(searchId, "running", text);
-      // Live headlines + company names for the loading screen, kept for 1 hour in the cache.
-      const live = {};
-      const feed = async (part) => {
-        Object.assign(live, part);
-        const seg = new Cache().segment(), key = `f${searchId}`, value = JSON.stringify(live);
-        try { await seg.put(key, value, 1); } catch { try { await seg.update(key, value, 1); } catch (err) { console.error("feed", err.message); } }
+      // Progress + real headlines for the loading screen go to data/live/<id>.json (GitHub), at most one write per
+      // stage (or every 8 s inside a long stage), one at a time so writes never clash.
+      let queue = Promise.resolve(), lastKey = "", lastAt = 0;
+      const live = (patch) => (queue = queue.then(() => store.liveUpdate(searchId, patch)));
+      const progress = (text) => {
+        const key = text.replace(/[\d]+/g, "#");
+        if (key === lastKey && Date.now() - lastAt < 8000) return;
+        lastKey = key; lastAt = Date.now();
+        live({ state: "running", progress: text });
       };
+      const feedData = {};
+      const feed = async (part) => { Object.assign(feedData, part); live({ feed: { ...feedData } }); };
       const summary = await researchNiche(idea, niche, JSON.parse(params.searches), progress, feed);
-      await store.updateSearch(searchId, "done", summary);
+      await queue;
+      await store.liveUpdate(searchId, { state: summary.startsWith("Paused") ? "failed" : "done", progress: summary });
       console.log(summary);
     } else {
       const log = await nightly[task](params);
@@ -36,7 +41,7 @@ module.exports = async (jobRequest, context) => {
     context.closeWithSuccess();
   } catch (err) {
     console.error(err);
-    if (params.search_id) await store.updateSearch(params.search_id, "failed", `Something went wrong: ${err.message}`).catch(() => {});
+    if (params.search_id) await store.liveUpdate(params.search_id, { state: "failed", progress: `Something went wrong: ${err.message}` });
     context.closeWithFailure();
   }
 };

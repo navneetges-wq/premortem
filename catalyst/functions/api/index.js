@@ -43,7 +43,7 @@ async function addOne(key, current) {
 
 // Returns "" if a new research job may start, otherwise the reason it can't.
 async function researchBlocked(req) {
-  if (store.readOnly()) return "New research is paused for a few days — saved results for 87 business types still work.";
+  if (store.readOnly()) return "New research is paused for a moment — saved results still work.";
   const day = new Date().toISOString().slice(0, 10);
   const vKey = `v${visitorId(req)}${day}`, sKey = `site${day}`;
   const [mine, site, credits] = await Promise.all([readCount(vKey), readCount(sKey), find.tavilyCreditsLeft()]);
@@ -56,14 +56,15 @@ async function researchBlocked(req) {
 
 // Start the background research job for an idea; returns the search id to follow its progress.
 async function startResearch(idea, niche, searches) {
-  const id = await store.newSearch(idea, niche, "waiting", "Starting research…");
-  await new JobScheduling().JOB.submitJob({
-    job_name: `r${String(id).slice(-12)}`, // max 20 characters
+  const id = `r${Date.now().toString(36)}${crypto.randomBytes(3).toString("hex")}`;
+  const job = await new JobScheduling().JOB.submitJob({
+    job_name: id.slice(0, 20), // max 20 characters
     jobpool_name: "researchpool",
     target_type: "Function",
     target_name: "researcher",
-    params: { search_id: String(id), idea, niche, searches: JSON.stringify(searches) },
+    params: { search_id: id, idea, niche, searches: JSON.stringify(searches) },
   });
+  await store.liveUpdate(id, { state: "waiting", niche, job_id: job.job_id, progress: "Starting research…" });
   return id;
 }
 
@@ -149,7 +150,7 @@ module.exports = async (req, res) => {
     // Live graveyard numbers for the home page (cached for 1 hour).
     if (req.method === "GET" && url.pathname === "/stats") {
       let cached = null;
-      cached = memGet("homestats"); if (!cached && !store.readOnly()) try { cached = JSON.parse(await new Cache().segment().getValue("homestats")); } catch { /* not cached yet */ }
+      cached = memGet("homestats");
       if (cached) return send(res, 200, cached);
       const all = await store.allCompanies();
       const stats = {
@@ -158,14 +159,14 @@ module.exports = async (req, res) => {
         business_types: new Set(all.map((c) => c._niche)).size,
         sources: new Set(all.flatMap((c) => c.sources || [])).size,
       };
-      memPut("homestats", stats, store.readOnly() ? 12 : 1); if (!store.readOnly()) try { await new Cache().segment().put("homestats", JSON.stringify(stats), 1); } catch { /* fine */ }
+      memPut("homestats", stats, 1);
       return send(res, 200, stats);
     }
 
     // Graveyard-wide insights for the landing page (risk score of every business type, causes, lifespans). Cached 1 hour.
     if (req.method === "GET" && url.pathname === "/insights") {
       let cached = null;
-      cached = memGet("insights"); if (!cached && !store.readOnly()) try { cached = JSON.parse(await new Cache().segment().getValue("insights")); } catch { /* not cached yet */ }
+      cached = memGet("insights");
       if (cached) return send(res, 200, cached);
       const all = await store.allCompanies(), byNiche = new Map();
       for (const c of all) { if (!byNiche.has(c._niche)) byNiche.set(c._niche, []); byNiche.get(c._niche).push(c); }
@@ -181,14 +182,14 @@ module.exports = async (req, res) => {
       const yr = (y) => (Number(y) > 1900 ? Number(y) : 0);
       const lifespans = dead.map((c) => (yr(c.founded_year) && yr(c.closed_year) >= yr(c.founded_year) ? yr(c.closed_year) - yr(c.founded_year) : null)).filter((x) => x !== null);
       const out = { types: types.sort((a, b) => a.score - b.score), causes: [...tally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4), shutDowns: dead.length, lifespans };
-      memPut("insights", out, store.readOnly() ? 12 : 1); if (!store.readOnly()) try { await new Cache().segment().put("insights", JSON.stringify(out), 1); } catch { /* fine */ }
+      memPut("insights", out, 1);
       return send(res, 200, out);
     }
 
     // Every shut-down company we have (name, years, cause) for the 3D graveyard. Cached for 1 hour.
     if (req.method === "GET" && url.pathname === "/graveyard") {
       let cached = null;
-      cached = memGet("graveyard"); if (!cached && !store.readOnly()) try { cached = JSON.parse(await new Cache().segment().getValue("graveyard")); } catch { /* not cached yet */ }
+      cached = memGet("graveyard");
       if (cached) return send(res, 200, cached);
       const year = (y) => (Number(y) > 1900 ? Number(y) : 0);
       const dead = (await store.allCompanies())
@@ -203,15 +204,22 @@ module.exports = async (req, res) => {
           country: c.country || "",
         }));
       const out = { count: dead.length, companies: dead };
-      memPut("graveyard", out, store.readOnly() ? 12 : 1); if (!store.readOnly()) try { await new Cache().segment().put("graveyard", JSON.stringify(out), 1); } catch { /* too big to cache: fine */ }
+      memPut("graveyard", out, 1);
       return send(res, 200, out);
     }
 
     if (req.method === "GET" && url.pathname === "/status") {
-      const row = await store.getSearch(url.searchParams.get("id"));
-      let feed = null; // real headlines and company names so far (for the live loading screen)
-      try { feed = JSON.parse(await new Cache().segment().getValue(`f${row.ROWID}`)); } catch { /* none yet */ }
-      return send(res, 200, { id: row.ROWID, niche: row.niche, state: row.state, progress: row.progress, feed });
+      const id = url.searchParams.get("id");
+      const live = (await store.liveGet(id)) || { state: "waiting", progress: "Starting research…" };
+      let state = live.state;
+      // Quiet for 4+ minutes? Ask Catalyst whether the job died (it can't report its own crash).
+      if ((state === "waiting" || state === "running") && live.job_id && Date.now() - new Date(live.at) > 240000) {
+        try {
+          const job = await new JobScheduling().JOB.getJob(live.job_id);
+          if (/FAIL/.test(String(job.job_status))) state = "failed";
+        } catch { /* keep waiting */ }
+      }
+      return send(res, 200, { id, niche: live.niche, state, progress: live.progress, feed: live.feed || null });
     }
 
     if (req.method === "GET" && url.pathname === "/results") {
@@ -227,16 +235,16 @@ module.exports = async (req, res) => {
           // Which companies are closest to this exact sentence — remembered for 24h (asking the AI takes ~1.3s).
           const ckey = "m2" + crypto.createHash("sha1").update(`${niche}|${companies.length}|${idea.toLowerCase()}`).digest("hex").slice(0, 24);
           let names = null;
-          names = memGet(ckey); if (!names) try { names = JSON.parse(await new Cache().segment().getValue(ckey)); } catch { /* not remembered yet */ }
+          names = memGet(ckey);
           if (!Array.isArray(names)) {
             const same = await find.closestToIdea(idea, companies);
             names = [...same].map((i) => companies[i] && companies[i].name).filter(Boolean);
-            memPut(ckey, names, 24); try { await new Cache().segment().put(ckey, JSON.stringify(names), 24); } catch { /* fine */ }
+            memPut(ckey, names, 24);
           }
           const close = new Set(names);
           companies.forEach((c) => (c.match = close.has(c.name) ? "same idea" : "similar idea"));
           // Few close matches → research this exact idea in the background (at most once a week per idea).
-          if (close.size < MIN_CLOSE && !(await store.recentSearchFor(idea, 7)) && !(await researchBlocked(req))) {
+          if (close.size < MIN_CLOSE && !(await store.recentSearchFor(idea, 7, niche)) && !(await researchBlocked(req))) {
             const { searches } = await find.sortIdea(idea);
             deepening = await startResearch(idea, niche, searches);
           }

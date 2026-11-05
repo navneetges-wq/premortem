@@ -4,14 +4,20 @@ premortem is a free web app for Indian idea-stage founders: type a one-line idea
 (shut down / running / acquired, each with news sources), a risk score, how they died, red flags and a summary report.
 Owner: Navneet (non-technical). Read README.md for the product and code layout.
 
-## ⚠️ Current state (since 2026-11-04): READ-ONLY SNAPSHOT MODE
-Catalyst's free plan allows only 10,000 Data Store reads/month (also 1,000 Cache GETs, 1,000 row UPDATEs, 5,000 INSERTs);
-they were used up on 2026-11-04. All reads now come from `catalyst/shared/snapshot.json` (bulk-read export: 3,482
-companies, 87 business types). While that file exists: new research, deepening and night jobs are paused with a friendly
-message. Do NOT delete snapshot.json or deploy older code — results would break again. Rebuild it with
-`/admin/export?table=COMPANIES` (bulk read: 5 exports/month allowed) when the data changes.
-Pending owner decision for bringing research back: A) GitHub as storage (recommended), B) wait for the monthly reset,
-C) Catalyst pay-as-you-go. Before deploying from a Conductor workspace, make sure it is up to date with origin/main.
+## Storage (since 2026-11-05): GitHub "data" branch, not the Catalyst Data Store
+Catalyst's free plan allows only 10,000 Data Store reads/month (1,000 Cache GETs, 1,000 row UPDATEs, 5,000 INSERTs);
+they ran out on 2026-11-04. Now:
+- Business types + companies: `data/niches/<slug>.json` in the repo's **data** branch (catalyst/shared/github.js +
+  store.js), written by research jobs via the GitHub API with `GITHUB_TOKEN` (fine-grained, Contents read/write, this repo
+  only; in keys.txt, injected by deploy.js). Base layer = `catalyst/shared/snapshot.json` (bulk-read export of the old
+  tables: 3,482 companies, 87 types); a GitHub file for a type overrides the snapshot. Never store visitor idea text there
+  (public) — only sha1 hashes (`researched`).
+- Live search progress: `data/live/<id>.json` (same branch); `/status` reads it.
+- Catalyst Data Store: only inserts for email sign-ups, mistake reports and a search counter. Catalyst Cache: only the
+  daily research counters and job logs. stats/insights/graveyard/closest-matches are kept in server memory.
+- No GITHUB_TOKEN → read-only: everything served from the snapshot, research and night jobs paused.
+- Code lives on `main`; never push to or rewrite the `data` branch by hand. Before deploying from a Conductor workspace,
+  make sure it is up to date with origin/main.
 
 ## Live links
 - App: https://whotriedit-60093906253.development.catalystserverless.in/app/index.html

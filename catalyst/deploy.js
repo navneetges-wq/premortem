@@ -25,6 +25,7 @@ for (const fn of ["api", "researcher"]) {
   const configFile = path.join(dir, "catalyst-config.json");
   const config = JSON.parse(fs.readFileSync(configFile, "utf8"));
   config.deployment.env_variables = { GEMINI_API_KEY: keys.GEMINI_API_KEY, TAVILY_API_KEY: keys.TAVILY_API_KEY, ADMIN_KEY: keys.ADMIN_KEY };
+  if (keys.GITHUB_TOKEN) config.deployment.env_variables.GITHUB_TOKEN = keys.GITHUB_TOKEN; // storage (data branch); without it research pauses
   fs.writeFileSync(configFile, JSON.stringify(config, null, "\t"));
 
   console.log(`Installing add-ons for ${fn}…`);

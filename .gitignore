@@ -15,6 +15,7 @@ catalyst/functions/*/store.js
 catalyst/functions/*/research.js
 catalyst/functions/*/nightly.js
 catalyst/functions/*/snapshot.json
+catalyst/functions/*/github.js
 # video build leftovers
 promo/encode
 promo/frames*/

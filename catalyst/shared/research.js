@@ -8,8 +8,8 @@ const store = require("./store");
 const headline = (t) => String(t || "").split(/\s[|–-]\s/)[0].trim().slice(0, 90);
 
 // feed(): optional — passes real headlines and company names to the loading screen as we go.
-async function researchNiche(idea, niche, searches, progress = async () => {
-  if (store.readOnly()) return "Paused: reading from the snapshot — new research is off for now.";}, feed = async () => {}) {
+async function researchNiche(idea, niche, searches, progress = async () => {}, feed = async () => {}) {
+  if (store.readOnly()) return "Paused: research needs GITHUB_TOKEN (storage) — saved results still work.";
   await progress(`Searching the web (${searches.length} searches)…`);
   const articles = await find.collectArticles(searches);
 
@@ -26,7 +26,7 @@ async function researchNiche(idea, niche, searches, progress = async () => {
     alive: companies.filter((c) => c.status === "running").map((c) => c.name).slice(0, 40),
   });
   await progress(`Saving ${companies.length} companies…`);
-  const { added, updated } = await store.mergeCompanies(niche, companies, find.simpleName);
+  const { added, updated } = await store.mergeCompanies(niche, companies, find.simpleName, idea);
 
   // Rebuild "How your idea could fail" from ALL saved companies (not just this run).
   await progress("Working out how ideas like this fail…");

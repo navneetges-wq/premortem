@@ -1,16 +1,32 @@
-// store.js — reading and writing our 3 Catalyst tables.
-// COMPANIES: one row per company (niche, name_key, status, details = everything else as JSON)
-// niches:    one row per business type (pre_mortem, runs, last_run)
-// searches:  one row per search someone makes (idea, niche, state, progress)
+// store.js — where premortem keeps its data.
+//
+//   Business types + companies → JSON files in the GitHub repo's "data" branch (github.js), on top of a base snapshot
+//                                (snapshot.json, a one-off export of the old Catalyst tables). Reading is effectively
+//                                unlimited; every change is a commit.
+//   Live search progress       → data/live/<id>.json in the same branch (for the loading screen).
+//   Email sign-ups, mistakes   → Catalyst Data Store (writes only; personal data never goes to GitHub).
+//
+// Without GITHUB_TOKEN the app still serves everything from the snapshot, read-only (research paused).
 
 const { Datastore } = require("@zcatalyst/datastore");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const gh = require("./github");
 
-// ---------- read-only snapshot mode ----------
-// Catalyst's free plan allows only 10,000 Data Store reads a month. When snapshot.json ships with the code (an export
-// made with Catalyst "bulk read"), every READ below comes from that file instead — unlimited and instant — and new
-// research is paused (it would need to read the Data Store). Delete snapshot.json to go back to live reads.
+const MAX_TEXT = 9900; // pre-mortems were stored in 10,000-character columns; keep them that size
+
+const tables = () => {
+  const ds = new Datastore();
+  return { searches: ds.table("searches"), mistakes: ds.table("mistakes"), subscribers: ds.table("subscribers") };
+};
+async function allRows(table) {
+  const rows = [];
+  for await (const row of table.getIterableRows()) rows.push(row);
+  return rows;
+}
+
+// ---------- the base snapshot ----------
 let SNAP;
 function snap() {
   if (SNAP === undefined) {
@@ -18,96 +34,135 @@ function snap() {
   }
   return SNAP;
 }
-const readOnly = () => !!snap();
+const readOnly = () => !gh.enabled();
 
-const MAX_TEXT = 9900; // Catalyst "Text" columns hold up to 10,000 characters
+const slug = (niche) => String(niche).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const nicheFile = (niche) => `data/niches/${slug(niche)}.json`;
+const today = () => new Date().toISOString().slice(0, 10);
 
-const tables = () => {
-  const ds = new Datastore();
-  return { companies: ds.table("COMPANIES"), niches: ds.table("niches"), searches: ds.table("searches"), mistakes: ds.table("mistakes"), subscribers: ds.table("subscribers") };
+function fromSnapshot(niche) {
+  const s = snap();
+  if (!s) return null;
+  const row = s.niches.find((r) => r.niche === niche);
+  const companies = s.companies.filter((c) => c.niche === niche).map((c) => ({ ...c.details }));
+  if (!row && !companies.length) return null;
+  return { niche, pre_mortem: row ? row.pre_mortem : "", runs: row ? Number(row.runs) || 0 : 0, last_run: row ? row.last_run : "", researched: [], companies };
+}
+
+// ---------- reading (remembered briefly in memory) ----------
+const MEM = new Map();
+const remember = async (key, seconds, load) => {
+  const hit = MEM.get(key);
+  if (hit && hit.until > Date.now()) return hit.value;
+  const value = await load();
+  MEM.set(key, { value, until: Date.now() + seconds * 1000 });
+  return value;
 };
+const forget = (key) => MEM.delete(key);
 
-// Read every row of a table, page by page.
-async function allRows(table) {
-  const rows = [];
-  for await (const row of table.getIterableRows()) rows.push(row);
-  return rows;
-}
+// Business types that have their own file in GitHub (newer than the snapshot).
+const savedFiles = () => (gh.enabled() ? remember("files", 120, async () => new Set((await gh.list("data/niches")).map((f) => f.name))) : Promise.resolve(new Set()));
 
-// Keep JSON under the size limit by shortening the longest text parts first.
-function fitText(obj) {
-  let text = JSON.stringify(obj);
-  if (text.length <= MAX_TEXT) return text;
-  const slim = { ...obj, story: (obj.story || "").slice(0, 300), sources: (obj.sources || []).slice(0, 5) };
-  text = JSON.stringify(slim);
-  return text.length <= MAX_TEXT ? text : JSON.stringify({ ...slim, reasons: [], risks_handled: [] }).slice(0, MAX_TEXT);
-}
-
-// ---------- companies ----------
-async function companiesFor(niche) {
-  if (snap()) return snap().companies.filter((r) => r.niche === niche).map((r) => ({ ...r.details, _rowid: r.ROWID }));
-  const rows = await allRows(tables().companies);
-  return rows.filter((r) => r.niche === niche).map((r) => ({ ...JSON.parse(r.details || "{}"), _rowid: r.ROWID }));
-}
-
-// Every saved company across all business types (used by the monthly re-check).
-async function allCompanies() {
-  if (snap()) return snap().companies.map((r) => ({ ...r.details, _rowid: r.ROWID, _niche: r.niche }));
-  return (await allRows(tables().companies)).map((r) => ({ ...JSON.parse(r.details || "{}"), _rowid: r.ROWID, _niche: r.niche }));
-}
-
-// Add new companies to the niche's graveyard; update ones we already have.
-async function mergeCompanies(niche, found, simpleName) {
-  const table = tables().companies;
-  const saved = new Map((await companiesFor(niche)).map((c) => [simpleName(c.name), c]));
-  let added = 0, updated = 0;
-
-  for (const c of found) {
-    const key = simpleName(c.name);
-    const old = saved.get(key);
-    if (!old) {
-      await table.insertRow({ niche, name_key: key, status: c.status, details: fitText(c) });
-      added++;
-      continue;
+// One business type → { niche, pre_mortem, runs, last_run, researched, companies } or null.
+async function loadNiche(niche, fresh = false) {
+  const key = `n:${niche}`;
+  if (fresh) forget(key);
+  return remember(key, 60, async () => {
+    if ((await savedFiles()).has(`${slug(niche)}.json`)) {
+      const f = await gh.readJson(nicheFile(niche));
+      if (f) return f.json;
     }
-    // Which status wins? If one run says "shut down"/"acquired" and the other says "running", the
-    // shut-down wins: list pages keep naming dead companies long after they close.
-    // Otherwise keep the newest (by the year the articles confirm it). Missing details get filled in.
-    const oldAlive = old.status === "running", newAlive = c.status === "running";
-    const newer = oldAlive !== newAlive ? (oldAlive ? c : old) : (c.status_year || 0) >= (old.status_year || 0) ? c : old;
-    const merged = { ...old, ...c, ...pickStatus(newer), sources: [...new Set([...(old.sources || []), ...(c.sources || [])])] };
-    for (const field of ["founded_year", "closed_year", "website", "founder_words", "founder_writeup_url"]) {
-      if (!c[field] && old[field]) merged[field] = old[field];
-    }
-    if (c.money_raised === "Not reported" && old.money_raised) merged.money_raised = old.money_raised;
-    delete merged._rowid;
-    await table.updateRow({ ROWID: old._rowid, status: merged.status, details: fitText(merged) });
-    updated++;
+    return fromSnapshot(niche);
+  });
+}
+
+// Every business type we have data for (snapshot + GitHub files).
+async function nicheNames() {
+  const names = new Set((snap() ? snap().niches.map((r) => r.niche) : []));
+  const files = await savedFiles();
+  if (files.size) {
+    const { NICHES } = require("./niches");
+    for (const n of NICHES) if (files.has(`${slug(n.name)}.json`)) names.add(n.name);
   }
-  return { added, updated };
+  return [...names];
+}
+
+async function companiesFor(niche) {
+  const n = await loadNiche(niche);
+  return n ? n.companies.map((c) => ({ ...c })) : [];
+}
+// Load many business types, 10 at a time.
+async function loadAll() {
+  const names = await nicheNames(), out = [];
+  for (let i = 0; i < names.length; i += 10) out.push(...(await Promise.all(names.slice(i, i + 10).map(loadNiche))));
+  return out.filter(Boolean);
+}
+async function allCompanies() {
+  return (await loadAll()).flatMap((n) => n.companies.map((c) => ({ ...c, _niche: n.niche })));
+}
+async function allNiches() {
+  return (await loadAll()).filter((n) => n.last_run).map((n) => ({ niche: n.niche, pre_mortem: n.pre_mortem, runs: n.runs, last_run: n.last_run }));
+}
+async function nicheRow(niche) {
+  const n = await loadNiche(niche);
+  return n && n.last_run ? { niche, pre_mortem: n.pre_mortem, runs: n.runs, last_run: n.last_run } : null;
+}
+
+// ---------- writing a business type (one commit) ----------
+async function changeNiche(niche, message, change) {
+  if (readOnly()) throw new Error("Research is paused (no GITHUB_TOKEN).");
+  let result;
+  await gh.updateJson(nicheFile(niche), async (cur) => {
+    const base = cur || fromSnapshot(niche) || { niche, pre_mortem: "", runs: 0, last_run: "", researched: [], companies: [] };
+    const doc = { ...base, researched: base.researched || [], companies: base.companies.map((c) => ({ ...c })) };
+    result = await change(doc);
+    return doc;
+  }, message);
+  forget(`n:${niche}`); forget("files");
+  return result;
+}
+
+const pickStatus = (c) => ({ status: c.status, status_year: c.status_year, causes: c.causes, risks_handled: c.risks_handled, one_line: c.one_line, reasons: c.reasons });
+const ideaHash = (idea) => crypto.createHash("sha1").update(String(idea).trim().toLowerCase()).digest("hex").slice(0, 16);
+
+// Add new companies to the business type; update ones we already have. `idea` (optional) is remembered as a hash
+// (never the words — the data branch is public) so the same idea isn't researched again within a week.
+async function mergeCompanies(niche, found, simpleName, idea) {
+  return changeNiche(niche, `Research: ${niche} (${found.length} companies)`, (doc) => {
+    const saved = new Map(doc.companies.map((c, i) => [simpleName(c.name), i]));
+    let added = 0, updated = 0;
+    for (const c of found) {
+      const i = saved.get(simpleName(c.name));
+      if (i === undefined) { doc.companies.push({ ...c }); saved.set(simpleName(c.name), doc.companies.length - 1); added++; continue; }
+      const old = doc.companies[i];
+      // Which status wins? If one run says "shut down"/"acquired" and the other says "running", the
+      // shut-down wins: list pages keep naming dead companies long after they close.
+      // Otherwise keep the newest (by the year the articles confirm it). Missing details get filled in.
+      const oldAlive = old.status === "running", newAlive = c.status === "running";
+      const newer = oldAlive !== newAlive ? (oldAlive ? c : old) : (c.status_year || 0) >= (old.status_year || 0) ? c : old;
+      const merged = { ...old, ...c, ...pickStatus(newer), sources: [...new Set([...(old.sources || []), ...(c.sources || [])])] };
+      for (const field of ["founded_year", "closed_year", "website", "founder_words", "founder_writeup_url"]) {
+        if (!c[field] && old[field]) merged[field] = old[field];
+      }
+      if (c.money_raised === "Not reported" && old.money_raised) merged.money_raised = old.money_raised;
+      doc.companies[i] = merged;
+      updated++;
+    }
+    if (idea) doc.researched = [...doc.researched.filter((r) => Date.now() - new Date(r.at) < 30 * 86400000), { h: ideaHash(idea), at: new Date().toISOString() }];
+    return { added, updated };
+  });
 }
 
 // Correct one company's status by hand (e.g. a wrong "acquired"). Returns true if it was found.
 async function setStatus(niche, name, status, simpleName) {
-  const c = (await companiesFor(niche)).find((x) => simpleName(x.name) === simpleName(name));
-  if (!c) return false;
-  const fixed = { ...c, status };
-  delete fixed._rowid;
-  await tables().companies.updateRow({ ROWID: c._rowid, status, details: fitText(fixed) });
-  return true;
+  return changeNiche(niche, `Fix: ${name} → ${status}`, (doc) => {
+    const c = doc.companies.find((x) => simpleName(x.name) === simpleName(name));
+    if (c) c.status = status;
+    return !!c;
+  });
 }
 
-const pickStatus = (c) => ({ status: c.status, status_year: c.status_year, causes: c.causes, risks_handled: c.risks_handled, one_line: c.one_line, reasons: c.reasons });
-
-// ---------- niches ----------
-const allNiches = async () => (snap() ? snap().niches.map((r) => ({ ...r })) : allRows(tables().niches));
-
-async function nicheRow(niche) {
-  if (snap()) return snap().niches.find((r) => r.niche === niche) || null;
-  return (await allRows(tables().niches)).find((r) => r.niche === niche) || null;
-}
-
-// The pre-mortem must stay valid JSON under the size limit: shorten quotes first, then drop extras.
+// The pre-mortem stays valid JSON under the size limit: shorten quotes first, then drop extras.
 function fitPremortem(p) {
   let text = JSON.stringify(p);
   if (text.length <= MAX_TEXT || !p.risks) return text;
@@ -122,44 +177,50 @@ function fitPremortem(p) {
 }
 
 async function saveNiche(niche, premortem) {
-  const table = tables().niches;
-  const row = await nicheRow(niche);
-  const fields = { niche, pre_mortem: fitPremortem(premortem), last_run: new Date().toISOString().slice(0, 10) };
-  if (row) await table.updateRow({ ROWID: row.ROWID, ...fields, runs: (Number(row.runs) || 0) + 1 });
-  else await table.insertRow({ ...fields, runs: 1 });
+  return changeNiche(niche, `Premortem: ${niche}`, (doc) => {
+    doc.pre_mortem = fitPremortem(premortem);
+    doc.last_run = today();
+    doc.runs = (Number(doc.runs) || 0) + 1;
+  });
 }
 
-// ---------- mistakes reported by visitors ----------
+// Was this exact idea researched in this business type in the last few days?
+async function recentSearchFor(idea, days, niche) {
+  if (readOnly()) return true; // no research without storage
+  const n = niche ? await loadNiche(niche) : null;
+  const h = ideaHash(idea);
+  return !!(n && (n.researched || []).some((r) => r.h === h && Date.now() - new Date(r.at) < days * 86400000));
+}
+
+// ---------- live progress of a search (loading screen) ----------
+const liveFile = (id) => `data/live/${String(id).replace(/[^a-z0-9]/gi, "").slice(0, 40)}.json`;
+async function liveUpdate(id, patch) {
+  if (readOnly()) return;
+  try {
+    await gh.updateJson(liveFile(id), (cur) => ({ ...(cur || {}), ...patch, at: new Date().toISOString() }), `Live: ${patch.state || "progress"}`);
+    forget(`l:${id}`);
+  } catch (err) { console.error("live", err.message); }
+}
+const liveGet = (id) => remember(`l:${id}`, 2, async () => { const f = await gh.readJson(liveFile(id)); return f ? f.json : null; });
+
+// ---------- mistakes reported by visitors (Data Store, insert only) ----------
 const saveMistake = (niche, company, message) =>
   tables().mistakes.insertRow({ niche: niche.slice(0, 250), company: company.slice(0, 250), message: message.slice(0, 2000) });
 const allMistakes = () => allRows(tables().mistakes);
 
-// ---------- email sign-ups (landing page) ----------
+// ---------- email sign-ups (Data Store; checking for a duplicate needs a read, so it's best-effort) ----------
 async function addSubscriber(email, source) {
-  const exists = (await allRows(tables().subscribers)).some((r) => String(r.email).toLowerCase() === email);
+  let exists = false;
+  try { exists = (await allRows(tables().subscribers)).some((r) => String(r.email).toLowerCase() === email); } catch { /* reads used up this month: just add */ }
   if (!exists) await tables().subscribers.insertRow({ email, source: source.slice(0, 90) });
   return !exists;
 }
 const allSubscribers = () => allRows(tables().subscribers);
 
-// ---------- searches ----------
-const newSearch = async (idea, niche, state, progress) =>
-  (await tables().searches.insertRow({ idea: idea.slice(0, 250), niche, state, progress })).ROWID;
-const updateSearch = (id, state, progress) => tables().searches.updateRow({ ROWID: id, state, progress: progress.slice(0, 250) });
-const getSearch = (id) => tables().searches.getRow(id);
-
-// Was this exact idea researched in the last few days? (so we don't search for it again and again)
-async function recentSearchFor(idea, days) {
-  if (snap()) return true; // no research while reading from the snapshot
-  const key = idea.trim().toLowerCase();
-  return (await allRows(tables().searches)).some((r) => {
-    if (String(r.idea || "").trim().toLowerCase() !== key || r.state === "failed") return false;
-    // Only real research counts. A search answered from saved results ("Ready (saved results)") is created the moment
-    // someone searches — counting it meant the exact-idea research never ran for any business type already researched.
-    if (/^(Ready \(saved|Saved results)/.test(String(r.progress || ""))) return false;
-    const when = new Date(String(r.CREATEDTIME || "").replace(" ", "T").replace(/:(\d{3})$/, ".$1"));
-    return isNaN(when) || (Date.now() - when) / 86400000 < days;
-  });
+// A search that was answered from saved results (kept for counting; never fails the visitor's search).
+async function newSearch(idea, niche, state, progress) {
+  try { return (await tables().searches.insertRow({ idea: idea.slice(0, 250), niche, state, progress })).ROWID; } catch { return `s${Date.now()}`; }
 }
 
-module.exports = { readOnly, setStatus, companiesFor, allCompanies, mergeCompanies, allNiches, nicheRow, saveNiche, newSearch, updateSearch, getSearch, recentSearchFor, saveMistake, allMistakes, addSubscriber, allSubscribers };
+module.exports = { readOnly, slug, companiesFor, allCompanies, allNiches, nicheRow, mergeCompanies, setStatus, saveNiche, recentSearchFor,
+  liveUpdate, liveGet, newSearch, saveMistake, allMistakes, addSubscriber, allSubscribers };
