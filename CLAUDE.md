@@ -4,6 +4,15 @@ premortem is a free web app for Indian idea-stage founders: type a one-line idea
 (shut down / running / acquired, each with news sources), a risk score, how they died, red flags and a summary report.
 Owner: Navneet (non-technical). Read README.md for the product and code layout.
 
+## ⚠️ Current state (since 2026-11-04): READ-ONLY SNAPSHOT MODE
+Catalyst's free plan allows only 10,000 Data Store reads/month (also 1,000 Cache GETs, 1,000 row UPDATEs, 5,000 INSERTs);
+they were used up on 2026-11-04. All reads now come from `catalyst/shared/snapshot.json` (bulk-read export: 3,482
+companies, 87 business types). While that file exists: new research, deepening and night jobs are paused with a friendly
+message. Do NOT delete snapshot.json or deploy older code — results would break again. Rebuild it with
+`/admin/export?table=COMPANIES` (bulk read: 5 exports/month allowed) when the data changes.
+Pending owner decision for bringing research back: A) GitHub as storage (recommended), B) wait for the monthly reset,
+C) Catalyst pay-as-you-go. Before deploying from a Conductor workspace, make sure it is up to date with origin/main.
+
 ## Live links
 - App: https://whotriedit-60093906253.development.catalystserverless.in/app/index.html
 - Landing: …/app/landing.html · 3D graveyard: …/app/graveyard.html · Privacy/Terms: …/app/privacy.html, terms.html
