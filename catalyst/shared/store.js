@@ -85,7 +85,7 @@ async function nicheNames() {
   const names = new Set((snap() ? snap().niches.map((r) => r.niche) : []));
   const files = await savedFiles();
   if (files.size) {
-    const { NICHES } = require("./niches");
+    const NICHES = require("./niches"); // niches.js exports the list itself
     for (const n of NICHES) if (files.has(`${slug(n.name)}.json`)) names.add(n.name);
   }
   return [...names];
