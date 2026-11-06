@@ -55,24 +55,28 @@ const remember = async (key, seconds, load) => {
   const hit = MEM.get(key);
   if (hit && hit.until > Date.now()) return hit.value;
   const value = await load();
-  MEM.set(key, { value, until: Date.now() + seconds * 1000 });
+  if (value !== null && value !== undefined) MEM.set(key, { value, until: Date.now() + seconds * 1000 }); // never remember "nothing yet"
   return value;
 };
 const forget = (key) => MEM.delete(key);
 
 // Business types that have their own file in GitHub (newer than the snapshot).
-const savedFiles = () => (gh.enabled() ? remember("files", 120, async () => new Set((await gh.list("data/niches")).map((f) => f.name))) : Promise.resolve(new Set()));
+const savedFiles = () => (gh.enabled() ? remember("files", 20, async () => new Set((await gh.list("data/niches")).map((f) => f.name))) : Promise.resolve(new Set()));
 
 // One business type → { niche, pre_mortem, runs, last_run, researched, companies } or null.
 async function loadNiche(niche, fresh = false) {
   const key = `n:${niche}`;
   if (fresh) forget(key);
-  return remember(key, 60, async () => {
+  return remember(key, 20, async () => {
     if ((await savedFiles()).has(`${slug(niche)}.json`)) {
       const f = await gh.readJson(nicheFile(niche));
       if (f) return f.json;
     }
-    return fromSnapshot(niche);
+    const base = fromSnapshot(niche);
+    if (base || !gh.enabled()) return base;
+    // Not in the snapshot and not in the (briefly remembered) file list: a search may have just saved it — look directly.
+    const f = await gh.readJson(nicheFile(niche)).catch(() => null);
+    return f ? f.json : null;
   });
 }
 

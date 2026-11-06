@@ -9,7 +9,7 @@ Catalyst's free plan allows only 10,000 Data Store reads/month (1,000 Cache GETs
 they ran out on 2026-11-04. Now:
 - Business types + companies: `data/niches/<slug>.json` in the repo's **data** branch (catalyst/shared/github.js +
   store.js), written by research jobs via the GitHub API with `GITHUB_TOKEN` (fine-grained, Contents read/write, this repo
-  only; in keys.txt, injected by deploy.js). Base layer = `catalyst/shared/snapshot.json` (bulk-read export of the old
+  only; in keys.txt, injected by deploy.js; created 2026-11-06 with no expiry — revoke on GitHub if it ever leaks). Base layer = `catalyst/shared/snapshot.json` (bulk-read export of the old
   tables: 3,482 companies, 87 types); a GitHub file for a type overrides the snapshot. Never store visitor idea text there
   (public) — only sha1 hashes (`researched`).
 - Live search progress: `data/live/<id>.json` (same branch); `/status` reads it.
